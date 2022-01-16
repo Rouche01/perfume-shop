@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import styled from "styled-components";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
-import { Product } from "../../types/product";
+import { Product } from "../types/product";
 
 interface OriginalPriceProps {
   salesExist?: boolean;
@@ -14,6 +14,7 @@ const ProductWrapper = styled.div`
   &:hover {
     border: 1px solid #ab8e66;
   }
+  position: relative;
 `;
 
 const ProductImage = styled.img`
@@ -75,6 +76,17 @@ const SalesPrice = styled.p`
   color: #000;
 `;
 
+const NewTag = styled.div`
+  background-color: #ab8e66;
+  position: absolute;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 2px 12px;
+  border-radius: 16px;
+  top: 8px;
+  left: 8px;
+`;
+
 interface ProductBoxProps {}
 
 const ProductBox: FC<Product & ProductBoxProps> = ({
@@ -120,6 +132,7 @@ const ProductBox: FC<Product & ProductBoxProps> = ({
             )}
           </PriceWrapper>
         </ProductInfo>
+        {isNew && <NewTag>New</NewTag>}
       </ProductWrapper>
     </>
   );

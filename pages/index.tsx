@@ -2,12 +2,15 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import styled from "styled-components";
 import Carousel from "../src/components/Carousel";
-import { CategoryNav, HomeSlide, ShowcaseCategory } from "../types/home";
+import { CategoryNav, HomeSlide, ShowcaseCategory } from "../src/types/home";
 import Image from "next/image";
 import NavPill from "../src/components/NavPill";
 import { useState } from "react";
 import ProductBox from "../src/components/ProductBox";
-import { products } from "../src/utils/dummyData";
+import { products, shopFeatures } from "../src/utils/dummyData";
+import Banner from "../src/components/Banner";
+import { LineButton } from "../src/components/Button";
+import FeatureItem from "../src/components/FeatureItem";
 
 const PageContainer = styled.div`
   max-width: 1280px;
@@ -54,24 +57,6 @@ const SlidePriceInfo = styled.p`
   padding: 0;
 `;
 
-const SlideButton = styled.button`
-  font-size: 0.82rem;
-  padding: 7px 0;
-  margin-top: 28px;
-  text-transform: uppercase;
-  background-color: transparent;
-  color: #000;
-  border: none;
-  border-bottom: 2px solid #000;
-  transition: all 0.4s ease 0s;
-  font-weight: 600;
-  cursor: pointer;
-  &:hover {
-    color: #ab8e66;
-    border-color: #ab8e66;
-  }
-`;
-
 const CategoryShowcase = styled.div`
   margin-top: 65px;
   margin-bottom: 60px;
@@ -90,6 +75,21 @@ const CategoryProducts = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 30px;
+`;
+
+const SubFooter = styled.div`
+  /* width: 100%; */
+  background-color: #ab8e66;
+  margin: 0 -100px;
+`;
+
+const SubFooterInner = styled.div`
+  padding: 50px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 120px;
+  max-width: 1280px;
+  margin: auto;
 `;
 
 const categoryNavigations: CategoryNav[] = [
@@ -153,7 +153,7 @@ const slides = HOME_SLIDES.map((val, idx) => {
             })}
           </span>
         </SlidePriceInfo>
-        <SlideButton>{val.buttonText}</SlideButton>
+        <LineButton>{val.buttonText}</LineButton>
       </SlideTextGroup>
     </Slide>
   );
@@ -163,6 +163,21 @@ const Home: NextPage = () => {
   const [activeCategory, setActiveCategory] = useState<ShowcaseCategory>(
     ShowcaseCategory.bestseller
   );
+
+  const sortedAndFilteredProducts = () => {
+    switch (activeCategory) {
+      case ShowcaseCategory.bestseller:
+        return products;
+      case ShowcaseCategory.new:
+        const newArrivals = products.filter((product) => product.isNew);
+        return newArrivals;
+      case ShowcaseCategory.topRated:
+        const topRated = products.sort((a, b) => b.rating - a.rating);
+        return topRated;
+      default:
+        return [];
+    }
+  };
 
   return (
     <PageContainer>
@@ -187,7 +202,7 @@ const Home: NextPage = () => {
           ))}
         </CategoryNavContainer>
         <CategoryProducts>
-          {products.map((val, idx) => (
+          {sortedAndFilteredProducts().map((val, idx) => (
             <ProductBox
               name={val.name}
               image={val.image}
@@ -200,6 +215,23 @@ const Home: NextPage = () => {
           ))}
         </CategoryProducts>
       </CategoryShowcase>
+      <Banner
+        title="Perfect For Gifts"
+        subtitle="Looking for the best gift items for your friends & loved ones? Come and shop with us!"
+        priceInfo={20000}
+      />
+      <SubFooter>
+        <SubFooterInner>
+          {shopFeatures.map(({ body, icon, title }, idx) => (
+            <FeatureItem
+              key={`feature-${idx}`}
+              body={body}
+              title={title}
+              icon={icon}
+            />
+          ))}
+        </SubFooterInner>
+      </SubFooter>
     </PageContainer>
   );
 };

@@ -1,4 +1,8 @@
-import { Product } from "../../types/product";
+import { ShopFeature } from "../types/home";
+import { Product } from "../types/product";
+import { VscRocket } from "react-icons/vsc";
+import { MdOutlineReplay, MdSupportAgent } from "react-icons/md";
+import { CurrencyInfo } from "../types/global";
 
 export const products: Product[] = [
   {
@@ -72,5 +76,46 @@ export const products: Product[] = [
     salesExist: true,
     rating: 5,
     isNew: false,
+  },
+];
+
+export const shopFeatures: ShopFeature[] = [
+  {
+    title: "Fast Delivery",
+    body: "Experience the fastest delivery when you shop with us, no stories",
+    icon: VscRocket,
+  },
+  {
+    title: "Money Guarantee",
+    body: "30 Days money back guarantee no question asked!",
+    icon: MdOutlineReplay,
+  },
+  {
+    title: "Online Support 24/7",
+    body: "We’re here to support to you. Let’s get shopping now!",
+    icon: MdSupportAgent,
+  },
+];
+
+export const supportedCurrency: CurrencyInfo[] = [
+  {
+    locale: "en-NG",
+    currencyCode: "NGN",
+  },
+  {
+    locale: "en-US",
+    currencyCode: "USD",
+  },
+  {
+    locale: "en-CA",
+    currencyCode: "CAD",
+  },
+  {
+    locale: "de-DE",
+    currencyCode: "EUR",
+  },
+  {
+    locale: "en-GB",
+    currencyCode: "GBP",
   },
 ];

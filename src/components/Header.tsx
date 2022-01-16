@@ -4,9 +4,17 @@ import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { CgShoppingCart } from "react-icons/cg";
 import { AiOutlineUser } from "react-icons/ai";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { useCurrencyContext } from "../utils/currencyProvider";
+import { supportedCurrency } from "../utils/dummyData";
+import { CurrencyInfo } from "../types/global";
+
+interface CurrencyListProps {
+  show: boolean;
+}
 
 const TopBar = styled.div`
-  background: #aa8e66;
+  background: #f3f3f3;
   width: 100%;
   padding: 20px 0;
 `;
@@ -20,18 +28,75 @@ const InnerSection = styled.div`
   justify-content: space-between;
 `;
 
+const MidBarInner = styled.div`
+  max-width: 1280px;
+  margin: auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+`;
+
 const TopBarText = styled.p`
   padding: 0;
   margin: 0;
   font-size: 1rem;
-  color: #fff;
+  color: #000;
+`;
+
+const TopBarActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
 `;
 
 const TopBarLink = styled(Link)`
   padding: 0;
   margin: 0;
   font-size: 1rem;
-  color: #fff;
+  color: #000;
+`;
+
+const CurrencyDropdown = styled.div`
+  position: relative;
+`;
+
+const CurrencyInput = styled.a`
+  text-decoration: none;
+  color: #000;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+`;
+
+const CurrencyList = styled.ul<CurrencyListProps>`
+  position: absolute;
+  background-color: #fff;
+  padding: 0;
+  transition: 0.35s;
+  text-align: left;
+  transform: translateY(10px);
+  box-shadow: 0px 0px 12px 0px rgb(0 0 0 / 16%);
+  min-width: 125px;
+  z-index: 200;
+  opacity: ${(props) => (props.show ? 1 : 0)};
+  visibility: ${(props) => (props.show ? "visible" : "hidden")};
+`;
+
+const CurrencyItem = styled.li`
+  list-style: none;
+`;
+
+const CurrencyItemLink = styled.a`
+  font-size: 1rem;
+  color: #888;
+  padding: 11px 20px;
+  text-decoration: none;
+  display: block;
+  &:hover {
+    background-color: #f1f1f1;
+    color: #ab8e66;
+  }
 `;
 
 const MidBar = styled.div`
@@ -41,15 +106,19 @@ const MidBar = styled.div`
 `;
 
 const Logo = styled.h2`
-  color: black;
+  color: #ab8e66;
   padding: 0;
   margin: 0;
+  text-align: center;
+  font-size: 40px;
+  font-family: Neonderthaw;
 `;
 
 const LinkGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 30px;
+  margin-left: auto;
 `;
 
 const LinkItem = styled(Link)`
@@ -73,14 +142,16 @@ const CounterSpan = styled.span`
 const BottomBar = styled.div`
   padding: 18px 0;
   width: 100%;
-  background-color: #f3f3f3;
+  background-color: #aa8e66;
 `;
 
 const MenuList = styled.div`
   display: flex;
   align-items: center;
-  gap: 54px;
+  justify-content: center;
+  gap: 90px;
   padding: 7px 0;
+  width: 100%;
 `;
 
 const MenuItem = styled.p`
@@ -89,6 +160,7 @@ const MenuItem = styled.p`
   font-size: 0.9rem;
   text-transform: uppercase;
   font-weight: bold;
+  color: #fff;
 `;
 
 const mainMenus: {
@@ -103,9 +175,30 @@ const mainMenus: {
 
 const Header: FC = () => {
   const [searchString, setSearchString] = useState<string | undefined>();
+  const [showCurrencyList, setShowCurrencyList] = useState<boolean>(false);
+  const { currencyInfo, setCurrencyInfo } = useCurrencyContext();
 
   const handleSearchBtn = () => {
     console.log(searchString);
+  };
+
+  const toggleCurrencyList = (
+    ev: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    ev.preventDefault();
+    setShowCurrencyList(!showCurrencyList);
+  };
+
+  const filteredSupportedCurrencies = supportedCurrency.filter(
+    (currency) => currency.currencyCode !== currencyInfo.currencyCode
+  );
+
+  const selectGlobalCurrency = (
+    ev: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    chosenCurrency: CurrencyInfo
+  ) => {
+    ev.preventDefault();
+    setCurrencyInfo(chosenCurrency);
   };
 
   return (
@@ -113,19 +206,46 @@ const Header: FC = () => {
       <TopBar>
         <InnerSection>
           <TopBarText>Welcome to our online store!</TopBarText>
-          <TopBarLink href="/login">
-            <a style={{ color: "#fff" }}>Login or Register</a>
-          </TopBarLink>
+          <TopBarActions>
+            <CurrencyDropdown className="currency-dropdown">
+              <CurrencyInput
+                onClick={(ev) => toggleCurrencyList(ev)}
+                href="#"
+                data-currency="currency-dropdown"
+              >
+                {currencyInfo.currencyCode}{" "}
+                <MdKeyboardArrowDown style={{ marginLeft: "4px" }} size={20} />
+              </CurrencyInput>
+              <CurrencyList show={showCurrencyList}>
+                {filteredSupportedCurrencies.map(({ currencyCode, locale }) => (
+                  <CurrencyItem key={currencyCode}>
+                    <CurrencyItemLink
+                      onClick={(ev) =>
+                        selectGlobalCurrency(ev, { currencyCode, locale })
+                      }
+                      href="#"
+                    >
+                      {currencyCode}
+                    </CurrencyItemLink>
+                  </CurrencyItem>
+                ))}
+              </CurrencyList>
+            </CurrencyDropdown>
+            <span>|</span>
+            <TopBarLink href="/login">
+              <a style={{ color: "#000" }}>Login or Register</a>
+            </TopBarLink>
+          </TopBarActions>
         </InnerSection>
       </TopBar>
       <MidBar>
-        <InnerSection>
-          <Logo>Peace Luxury</Logo>
+        <MidBarInner>
           <SearchBar
             searchValue={searchString}
             setSearchValue={setSearchString}
             searchBtnFunc={handleSearchBtn}
           />
+          <Logo>Peace Luxury</Logo>
           <LinkGroup>
             <LinkItem href="/cart">
               <a style={{ position: "relative" }}>
@@ -139,7 +259,7 @@ const Header: FC = () => {
               </a>
             </LinkItem>
           </LinkGroup>
-        </InnerSection>
+        </MidBarInner>
       </MidBar>
       <BottomBar>
         <InnerSection>

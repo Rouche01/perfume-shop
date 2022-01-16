@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { HiOutlineSearch } from "react-icons/hi";
 
 const SearchContainer = styled.div`
-  width: 400px;
+  width: 250px;
   position: relative;
 `;
 
@@ -20,11 +20,10 @@ const SearchInput = styled.input`
 `;
 
 const SearchBtn = styled.div`
-  background-color: #aa8e66;
   position: absolute;
   right: 0;
-  top: 0;
-  height: 100%;
+  top: 20%;
+  /* height: 100%; */
   border-top-right-radius: 100px;
   border-bottom-right-radius: 100px;
   display: flex;
@@ -55,7 +54,7 @@ const SearchBar: FC<SearchBarProps> = ({
           onChange={(ev) => setSearchValue(ev.target.value)}
         />
         <SearchBtn onClick={searchBtnFunc}>
-          <HiOutlineSearch size={21} color="white" />
+          <HiOutlineSearch size={21} color="#ab8e66" />
         </SearchBtn>
       </SearchContainer>
     </>

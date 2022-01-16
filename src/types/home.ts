@@ -1,3 +1,5 @@
+import { IconType } from "react-icons";
+
 export interface HomeSlide {
   heroImg: string;
   mainTitle: string;
@@ -15,4 +17,10 @@ export enum ShowcaseCategory {
   bestseller = "BESTSELLER",
   new = "NEW_ARRIVALS",
   topRated = "TOP_RATED",
+}
+
+export interface ShopFeature {
+  icon: IconType;
+  title: string;
+  body: string;
 }
