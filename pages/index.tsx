@@ -11,6 +11,11 @@ import { products, shopFeatures } from "../src/utils/dummyData";
 import Banner from "../src/components/Banner";
 import { LineButton } from "../src/components/Button";
 import FeatureItem from "../src/components/FeatureItem";
+import { useCurrencyConverter } from "../src/hooks/currency";
+import {
+  Context as CurrencyContext,
+  useCurrencyContext,
+} from "../src/utils/currencyProvider";
 
 const PageContainer = styled.div`
   max-width: 1280px;
@@ -164,6 +169,9 @@ const Home: NextPage = () => {
     ShowcaseCategory.bestseller
   );
 
+  const { currencyInfo } = useCurrencyContext();
+  const { convertToCurrency, formatPrice } = useCurrencyConverter(currencyInfo);
+
   const sortedAndFilteredProducts = () => {
     switch (activeCategory) {
       case ShowcaseCategory.bestseller:
@@ -206,10 +214,10 @@ const Home: NextPage = () => {
             <ProductBox
               name={val.name}
               image={val.image}
-              originalPrice={val.originalPrice}
+              originalPrice={formatPrice(convertToCurrency(val.originalPrice))}
               rating={val.rating}
               salesExist={val.salesExist}
-              salesPrice={val?.salesPrice}
+              salesPrice={formatPrice(val?.salesPrice)}
               isNew={val.isNew}
             />
           ))}

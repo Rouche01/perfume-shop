@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import styled from "styled-components";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { Product } from "../types/product";
+import { CurrencyInfo } from "../types/global";
 
 interface OriginalPriceProps {
   salesExist?: boolean;
@@ -87,17 +88,14 @@ const NewTag = styled.div`
   left: 8px;
 `;
 
-interface ProductBoxProps {}
+interface ProductBoxProps {
+  originalPrice: string;
+  salesPrice: string;
+}
 
-const ProductBox: FC<Product & ProductBoxProps> = ({
-  name,
-  image,
-  isNew,
-  originalPrice,
-  rating,
-  salesExist,
-  salesPrice,
-}) => {
+const ProductBox: FC<
+  Omit<Product, "originalPrice" | "salesPrice"> & ProductBoxProps
+> = ({ name, image, isNew, originalPrice, rating, salesExist, salesPrice }) => {
   return (
     <>
       <ProductWrapper>
@@ -117,19 +115,9 @@ const ProductBox: FC<Product & ProductBoxProps> = ({
           </StarRating>
           <PriceWrapper>
             <OriginalPrice salesExist={salesExist}>
-              {Number(originalPrice).toLocaleString("en-NG", {
-                currency: "NGN",
-                style: "currency",
-              })}
+              {originalPrice}
             </OriginalPrice>
-            {salesExist && (
-              <SalesPrice>
-                {Number(salesPrice).toLocaleString("en-NG", {
-                  currency: "NGN",
-                  style: "currency",
-                })}
-              </SalesPrice>
-            )}
+            {salesExist && <SalesPrice>{salesPrice}</SalesPrice>}
           </PriceWrapper>
         </ProductInfo>
         {isNew && <NewTag>New</NewTag>}
