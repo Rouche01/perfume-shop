@@ -10,10 +10,19 @@ import { RoundedButton } from "../src/components/Button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useContactFormValidation } from "../src/hooks/validationSchema";
 import { ContactFormValues } from "../src/types/global";
+import { FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
+import { VscMail } from "react-icons/vsc";
 
+interface SectionTitleProps {
+  color: string;
+}
 interface FormRowProps {
   columns: number;
   mt?: number;
+}
+
+interface InfoIconProps {
+  component: any;
 }
 
 const ContactBox = styled.div`
@@ -32,12 +41,13 @@ const ContactForm = styled.div`
   padding: 55px 70px;
 `;
 
-const FormTitle = styled.h2`
+const SectionTitle = styled.h2<SectionTitleProps>`
   margin: 0;
   padding: 0;
   font-size: 1rem;
   font-weight: 500;
   text-transform: uppercase;
+  color: ${(props) => props.color};
 `;
 
 const FormBody = styled.div`
@@ -54,6 +64,41 @@ const FormRow = styled.div<FormRowProps>`
 
 const ContactInfo = styled.div`
   background-color: #111111;
+  padding: 55px 45px 45px;
+`;
+
+const InfoBody = styled.div`
+  margin-top: 60px;
+`;
+
+const InfoItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+`;
+
+const InfoIcon = styled(({ component, ...props }: InfoIconProps) =>
+  React.cloneElement(component, props)
+)`
+  border-radius: 100%;
+  border: 1px solid #ab8e66;
+  width: 42px;
+  height: 42px;
+`;
+
+const IconWrapper = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const InfoText = styled.p`
+  margin: 0;
+  padding: 0;
+  font-size: 0.875rem;
+  color: #ddd;
+  margin-left: 30px;
+  line-height: 1.6rem;
 `;
 
 const ContactUs = () => {
@@ -88,7 +133,7 @@ const ContactUs = () => {
       <ContactBox>
         <ContactForm>
           <form onSubmit={handleSubmit(submitContactForm)}>
-            <FormTitle>Send us a Message!</FormTitle>
+            <SectionTitle color="#0A0A0A">Send us a Message!</SectionTitle>
             <FormBody>
               <FormRow columns={2}>
                 <InputField
@@ -134,7 +179,46 @@ const ContactUs = () => {
             <RoundedButton type="submit">Send Message</RoundedButton>
           </form>
         </ContactForm>
-        <ContactInfo></ContactInfo>
+        <ContactInfo>
+          <SectionTitle color="#FFF">Contact Information</SectionTitle>
+          <InfoBody>
+            <InfoItem>
+              <InfoIcon
+                component={
+                  <IconWrapper>
+                    <FaMapMarkerAlt size={16} color="#ab8e66" />
+                  </IconWrapper>
+                }
+              />
+              <InfoText>Addo Road, Ajah, Lagos,Nigeria.</InfoText>
+            </InfoItem>
+            <InfoItem>
+              <InfoIcon
+                component={
+                  <IconWrapper>
+                    <FaPhoneAlt size={16} color="#ab8e66" />
+                  </IconWrapper>
+                }
+              />
+              <InfoText>
+                (+234) 810 485 2967 <br />
+                (+234) 901 765 6561
+              </InfoText>
+            </InfoItem>
+            <InfoItem>
+              <InfoIcon
+                component={
+                  <IconWrapper>
+                    <VscMail size={18} color="#ab8e66" />
+                  </IconWrapper>
+                }
+              />
+              <InfoText>
+                info@perfumeshop.com.ng
+              </InfoText>
+            </InfoItem>
+          </InfoBody>
+        </ContactInfo>
       </ContactBox>
     </PageContainer>
   );
