@@ -2,6 +2,7 @@ import React, { FC, useState } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
+import { RoundedButton } from "./Button";
 
 const FooterContainer = styled.div`
   background-color: #f3f3f3;
@@ -42,18 +43,6 @@ const SubscribeInput = styled.input`
   &:focus {
     outline: none;
   }
-`;
-
-const SubscribeBtn = styled.button`
-  font-size: 0.935rem;
-  padding: 14px 32px;
-  text-transform: uppercase;
-  border-radius: 100px;
-  background-color: #aa8e66;
-  border: 1px solid #aa8e66;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
 `;
 
 const FooterMenu = styled.div`
@@ -156,7 +145,7 @@ const Footer: FC = () => {
               value={email}
               onChange={(ev) => setEmail(ev.target.value)}
             />
-            <SubscribeBtn>Subscribe</SubscribeBtn>
+            <RoundedButton>Subscribe</RoundedButton>
           </>
         </SubscribeForm>
         <FooterMenu>

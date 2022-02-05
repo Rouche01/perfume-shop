@@ -12,3 +12,11 @@ export const PageTitle = styled.h2`
   text-transform: uppercase;
   font-weight: 600;
 `;
+
+export const ErrorText = styled.p`
+  margin: 0;
+  padding: 0;
+  color: #f20;
+  font-size: 0.8rem;
+  margin-top: 5px;
+`;

@@ -17,3 +17,11 @@ export enum SortOptions {
   averageRating = "Average Rating",
   newestArrivals = "Newest Arrivals",
 }
+
+export interface ContactFormValues {
+  name: string;
+  emailAddress: string;
+  phone: string;
+  company: string;
+  message: string;
+}

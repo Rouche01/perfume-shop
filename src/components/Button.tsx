@@ -18,3 +18,16 @@ export const LineButton = styled.button`
     border-color: #ab8e66;
   }
 `;
+
+export const RoundedButton = styled.button`
+  font-size: 0.875rem;
+  padding: 14px 32px;
+  text-transform: uppercase;
+  border-radius: 100px;
+  background-color: #aa8e66;
+  border: 1px solid #aa8e66;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: Jost;
+`;
