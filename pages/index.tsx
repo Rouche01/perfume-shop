@@ -5,22 +5,15 @@ import Carousel from "../src/components/Carousel";
 import { CategoryNav, HomeSlide, ShowcaseCategory } from "../src/types/home";
 import Image from "next/image";
 import NavPill from "../src/components/NavPill";
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import ProductBox from "../src/components/ProductBox";
 import { products, shopFeatures } from "../src/utils/dummyData";
 import Banner from "../src/components/Banner";
 import { LineButton } from "../src/components/Button";
 import FeatureItem from "../src/components/FeatureItem";
 import { useCurrencyConverter } from "../src/hooks/currency";
-import {
-  Context as CurrencyContext,
-  useCurrencyContext,
-} from "../src/utils/currencyProvider";
-
-const PageContainer = styled.div`
-  max-width: 1280px;
-  margin: auto;
-`;
+import { useCurrencyContext } from "../src/utils/currencyProvider";
+import { PageContainer } from "../src/generalStyles";
 
 const Slide = styled.div`
   background-color: #efefef;
@@ -129,40 +122,39 @@ const HOME_SLIDES: HomeSlide[] = [
   },
 ];
 
-const slides = HOME_SLIDES.map((val, idx) => {
-  const subtitleWds = val.supportingTitle.split(" ");
-  const subtitleJSX = (): JSX.Element => (
-    <>
-      {subtitleWds[0]} <br /> {subtitleWds[1]}
-    </>
-  );
+const slides = (priceFormatter: (price: number) => string) => {
+  return HOME_SLIDES.map((val, idx) => {
+    const subtitleWds = val.supportingTitle.split(" ");
+    const subtitleJSX = (): JSX.Element => (
+      <>
+        {subtitleWds[0]} <br /> {subtitleWds[1]}
+      </>
+    );
 
-  return (
-    <Slide key={`home-slides-${idx}`}>
-      <Image src={val.heroImg} width={500} height={500} />
-      <SlideTextGroup>
-        <SlideMajorTitle>{val.mainTitle}</SlideMajorTitle>
-        <SlideSupportTitle>{subtitleJSX()}</SlideSupportTitle>
-        <SlidePriceInfo>
-          Price from:{" "}
-          <span
-            style={{
-              fontSize: "1.75rem",
-              color: "#ab8e66",
-              fontWeight: "600",
-            }}
-          >
-            {Number(val.priceRangeValue).toLocaleString("en-NG", {
-              currency: "NGN",
-              style: "currency",
-            })}
-          </span>
-        </SlidePriceInfo>
-        <LineButton>{val.buttonText}</LineButton>
-      </SlideTextGroup>
-    </Slide>
-  );
-});
+    return (
+      <Slide key={`home-slides-${idx}`}>
+        <Image src={val.heroImg} width={500} height={500} />
+        <SlideTextGroup>
+          <SlideMajorTitle>{val.mainTitle}</SlideMajorTitle>
+          <SlideSupportTitle>{subtitleJSX()}</SlideSupportTitle>
+          <SlidePriceInfo>
+            Price from:{" "}
+            <span
+              style={{
+                fontSize: "1.75rem",
+                color: "#ab8e66",
+                fontWeight: "600",
+              }}
+            >
+              {priceFormatter(val.priceRangeValue)}
+            </span>
+          </SlidePriceInfo>
+          <LineButton>{val.buttonText}</LineButton>
+        </SlideTextGroup>
+      </Slide>
+    );
+  });
+};
 
 const Home: NextPage = () => {
   const [activeCategory, setActiveCategory] = useState<ShowcaseCategory>(
@@ -170,7 +162,9 @@ const Home: NextPage = () => {
   );
 
   const { currencyInfo } = useCurrencyContext();
-  const { convertToCurrency, formatPrice } = useCurrencyConverter(currencyInfo);
+  const { formatPrice } = useCurrencyConverter(currencyInfo);
+
+  const formattedSlides = useMemo(() => slides(formatPrice), [currencyInfo]);
 
   const sortedAndFilteredProducts = () => {
     switch (activeCategory) {
@@ -194,7 +188,7 @@ const Home: NextPage = () => {
         <meta name="description" content="Authentic Perfumes & Ouds" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Carousel slides={slides} />
+      <Carousel slides={formattedSlides} />
       <CategoryShowcase>
         <CategoryNavContainer>
           {categoryNavigations.map(({ title, id }) => (
@@ -212,9 +206,10 @@ const Home: NextPage = () => {
         <CategoryProducts>
           {sortedAndFilteredProducts().map((val, idx) => (
             <ProductBox
+              key={val.image}
               name={val.name}
               image={val.image}
-              originalPrice={formatPrice(convertToCurrency(val.originalPrice))}
+              originalPrice={formatPrice(val.originalPrice)}
               rating={val.rating}
               salesExist={val.salesExist}
               salesPrice={formatPrice(val?.salesPrice)}
@@ -226,7 +221,7 @@ const Home: NextPage = () => {
       <Banner
         title="Perfect For Gifts"
         subtitle="Looking for the best gift items for your friends & loved ones? Come and shop with us!"
-        priceInfo={20000}
+        priceInfo={formatPrice(20000)}
       />
       <SubFooter>
         <SubFooterInner>

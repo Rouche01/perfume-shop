@@ -1,13 +1,17 @@
-import React, { FC, useState } from "react";
+import React, { FC, forwardRef, useState } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { CgShoppingCart } from "react-icons/cg";
 import { AiOutlineUser } from "react-icons/ai";
+import { FiHeart } from "react-icons/fi";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { useCurrencyContext } from "../utils/currencyProvider";
 import { supportedCurrency } from "../utils/dummyData";
 import { CurrencyInfo } from "../types/global";
+import withClickOutside, {
+  WrappedComponentProps,
+} from "../hoc/withClickOutside";
 
 interface CurrencyListProps {
   show: boolean;
@@ -101,7 +105,7 @@ const CurrencyItemLink = styled.a`
 
 const MidBar = styled.div`
   color: #fff;
-  padding: 30px 0;
+  padding: 20px 0;
   width: 100%;
 `;
 
@@ -173,109 +177,125 @@ const mainMenus: {
   { name: "Contact Us", link: "/contact-us" },
 ];
 
-const Header: FC = () => {
-  const [searchString, setSearchString] = useState<string | undefined>();
-  const [showCurrencyList, setShowCurrencyList] = useState<boolean>(false);
-  const { currencyInfo, setCurrencyInfo } = useCurrencyContext();
+type Ref = HTMLDivElement;
 
-  const handleSearchBtn = () => {
-    console.log(searchString);
-  };
+const Header = forwardRef<Ref, WrappedComponentProps>(
+  ({ open, setOpen }, ref) => {
+    const [searchString, setSearchString] = useState<string | undefined>();
+    const { currencyInfo, setCurrencyInfo } = useCurrencyContext();
 
-  const toggleCurrencyList = (
-    ev: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-  ) => {
-    ev.preventDefault();
-    setShowCurrencyList(!showCurrencyList);
-  };
+    const handleSearchBtn = () => {
+      console.log(searchString);
+    };
 
-  const filteredSupportedCurrencies = supportedCurrency.filter(
-    (currency) => currency.currencyCode !== currencyInfo.currencyCode
-  );
+    const toggleCurrencyList = (
+      ev: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+    ) => {
+      ev.preventDefault();
+      setOpen(!open);
+    };
 
-  const selectGlobalCurrency = (
-    ev: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-    chosenCurrency: CurrencyInfo
-  ) => {
-    ev.preventDefault();
-    setCurrencyInfo(chosenCurrency);
-  };
+    // console.log(open)
 
-  return (
-    <>
-      <TopBar>
-        <InnerSection>
-          <TopBarText>Welcome to our online store!</TopBarText>
-          <TopBarActions>
-            <CurrencyDropdown className="currency-dropdown">
-              <CurrencyInput
-                onClick={(ev) => toggleCurrencyList(ev)}
-                href="#"
-                data-currency="currency-dropdown"
-              >
-                {currencyInfo.currencyCode}{" "}
-                <MdKeyboardArrowDown style={{ marginLeft: "4px" }} size={20} />
-              </CurrencyInput>
-              <CurrencyList show={showCurrencyList}>
-                {filteredSupportedCurrencies.map(({ currencyCode, locale }) => (
-                  <CurrencyItem key={currencyCode}>
-                    <CurrencyItemLink
-                      onClick={(ev) =>
-                        selectGlobalCurrency(ev, { currencyCode, locale })
-                      }
-                      href="#"
-                    >
-                      {currencyCode}
-                    </CurrencyItemLink>
-                  </CurrencyItem>
-                ))}
-              </CurrencyList>
-            </CurrencyDropdown>
-            <span>|</span>
-            <TopBarLink href="/login">
-              <a style={{ color: "#000" }}>Login or Register</a>
-            </TopBarLink>
-          </TopBarActions>
-        </InnerSection>
-      </TopBar>
-      <MidBar>
-        <MidBarInner>
-          <SearchBar
-            searchValue={searchString}
-            setSearchValue={setSearchString}
-            searchBtnFunc={handleSearchBtn}
-          />
-          <Logo>Peace Luxury</Logo>
-          <LinkGroup>
-            <LinkItem href="/cart">
-              <a style={{ position: "relative" }}>
-                <CgShoppingCart size={28} color="#555555" />
-                <CounterSpan>0</CounterSpan>
-              </a>
-            </LinkItem>
-            <LinkItem href="/profile">
-              <a>
-                <AiOutlineUser size={28} color="#555555" />
-              </a>
-            </LinkItem>
-          </LinkGroup>
-        </MidBarInner>
-      </MidBar>
-      <BottomBar>
-        <InnerSection>
-          <MenuList>
-            {mainMenus.map(({ name, link }) => (
-              <Link href={link} key={link}>
-                <a>
-                  <MenuItem>{name}</MenuItem>
+    const filteredSupportedCurrencies = supportedCurrency.filter(
+      (currency) => currency.currencyCode !== currencyInfo.currencyCode
+    );
+
+    const selectGlobalCurrency = (
+      ev: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+      chosenCurrency: CurrencyInfo
+    ) => {
+      ev.preventDefault();
+      setCurrencyInfo(chosenCurrency);
+    };
+
+    return (
+      <>
+        <TopBar>
+          <InnerSection>
+            <TopBarText>Welcome to our online store!</TopBarText>
+            <TopBarActions>
+              <CurrencyDropdown ref={ref} className="currency-dropdown">
+                <CurrencyInput
+                  onClick={(ev) => toggleCurrencyList(ev)}
+                  href="#"
+                  data-currency="currency-dropdown"
+                >
+                  {currencyInfo.currencyCode}{" "}
+                  <MdKeyboardArrowDown
+                    style={{ marginLeft: "4px" }}
+                    size={20}
+                  />
+                </CurrencyInput>
+                <CurrencyList show={open}>
+                  {filteredSupportedCurrencies.map(
+                    ({ currencyCode, locale }) => (
+                      <CurrencyItem key={currencyCode}>
+                        <CurrencyItemLink
+                          onClick={(ev) =>
+                            selectGlobalCurrency(ev, { currencyCode, locale })
+                          }
+                          href="#"
+                        >
+                          {currencyCode}
+                        </CurrencyItemLink>
+                      </CurrencyItem>
+                    )
+                  )}
+                </CurrencyList>
+              </CurrencyDropdown>
+              <span>|</span>
+              <TopBarLink href="/login">
+                <a style={{ color: "#000" }}>Login or Register</a>
+              </TopBarLink>
+            </TopBarActions>
+          </InnerSection>
+        </TopBar>
+        <MidBar>
+          <MidBarInner>
+            <SearchBar
+              searchValue={searchString}
+              setSearchValue={setSearchString}
+              searchBtnFunc={handleSearchBtn}
+            />
+            <Logo>Peace Luxury</Logo>
+            <LinkGroup>
+              <LinkItem href="/cart">
+                <a style={{ position: "relative" }}>
+                  <CgShoppingCart size={28} color="#555555" />
+                  <CounterSpan>0</CounterSpan>
                 </a>
-              </Link>
-            ))}
-          </MenuList>
-        </InnerSection>
-      </BottomBar>
-    </>
-  );
-};
+              </LinkItem>
+              <LinkItem href="wishlist">
+                <a style={{ position: "relative" }}>
+                  <FiHeart size={26} color="#555" />
+                  <CounterSpan>0</CounterSpan>
+                </a>
+              </LinkItem>
+              <LinkItem href="/profile">
+                <a>
+                  <AiOutlineUser size={28} color="#555555" />
+                </a>
+              </LinkItem>
+            </LinkGroup>
+          </MidBarInner>
+        </MidBar>
+        <BottomBar>
+          <InnerSection>
+            <MenuList>
+              {mainMenus.map(({ name, link }) => (
+                <Link href={link} key={link}>
+                  <a>
+                    <MenuItem>{name}</MenuItem>
+                  </a>
+                </Link>
+              ))}
+            </MenuList>
+          </InnerSection>
+        </BottomBar>
+      </>
+    );
+  }
+);
 
-export default Header;
+export default withClickOutside(Header);

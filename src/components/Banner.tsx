@@ -47,7 +47,7 @@ const PriceInfo = styled.p`
 interface BannerProps {
   title: string;
   subtitle: string;
-  priceInfo: number;
+  priceInfo: string;
 }
 
 const Banner: FC<BannerProps> = ({ title, subtitle, priceInfo }) => {
@@ -65,10 +65,7 @@ const Banner: FC<BannerProps> = ({ title, subtitle, priceInfo }) => {
               fontWeight: "600",
             }}
           >
-            {Number(priceInfo).toLocaleString("en-NG", {
-              currency: "NGN",
-              style: "currency",
-            })}
+            {priceInfo}
           </span>
         </PriceInfo>
         <LineButton>Shop Now</LineButton>

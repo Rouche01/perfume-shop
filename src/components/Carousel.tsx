@@ -7,11 +7,16 @@ import {
   MdOutlineArrowForwardIos,
 } from "react-icons/md";
 
+interface ArrowProps {
+  component: any;
+  left: number;
+}
+
 const StyledSlider = styled(Slider)`
   margin: 30px 0;
 `;
 
-const Arrow = styled(({ component, ...props }) =>
+const Arrow = styled(({ component, ...props }: ArrowProps) =>
   React.cloneElement(component, props)
 )`
   background-color: white;
