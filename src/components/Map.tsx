@@ -11,7 +11,7 @@ interface PinContainerProps {
 const MapContainer = styled.div`
   /* width: 100%; */
   height: 500px;
-  margin: 0 -6.3%;
+  margin: 0 -1000px;
 `;
 
 const PinContainer = styled.div<PinContainerProps>`

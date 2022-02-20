@@ -78,7 +78,7 @@ const CategoryProducts = styled.div`
 const SubFooter = styled.div`
   /* width: 100%; */
   background-color: #ab8e66;
-  margin: 0 -100px;
+  margin: 0 -1000px;
 `;
 
 const SubFooterInner = styled.div`
@@ -231,6 +231,7 @@ const Home: NextPage = () => {
               body={body}
               title={title}
               icon={icon}
+              mode="dark"
             />
           ))}
         </SubFooterInner>

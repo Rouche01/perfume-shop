@@ -20,7 +20,7 @@ export enum ShowcaseCategory {
 }
 
 export interface ShopFeature {
-  icon: IconType;
+  icon: string;
   title: string;
   body: string;
 }

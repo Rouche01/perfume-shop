@@ -1,7 +1,11 @@
 import { ShopFeature } from "../types/home";
 import { Product } from "../types/product";
 import { VscRocket } from "react-icons/vsc";
-import { MdOutlineReplay, MdSupportAgent } from "react-icons/md";
+import {
+  MdOutlineReplay,
+  MdSupportAgent,
+  MdOutlineDeliveryDining,
+} from "react-icons/md";
 import { CurrencyInfo } from "../types/global";
 
 export const products: Product[] = [
@@ -83,17 +87,17 @@ export const shopFeatures: ShopFeature[] = [
   {
     title: "Fast Delivery",
     body: "Experience the fastest delivery when you shop with us, no stories",
-    icon: VscRocket,
+    icon: "rocket_launch",
   },
   {
-    title: "Money Guarantee",
+    title: "Money Back Guarantee",
     body: "30 Days money back guarantee no question asked!",
-    icon: MdOutlineReplay,
+    icon: "replay",
   },
   {
     title: "Online Support 24/7",
     body: "We’re here to support to you. Let’s get shopping now!",
-    icon: MdSupportAgent,
+    icon: "contact_support",
   },
 ];
 
