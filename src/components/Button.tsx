@@ -1,5 +1,10 @@
 import styled from "styled-components";
 
+interface RoundedBtnProps {
+  fullwidth?: boolean;
+  bgColor: string;
+}
+
 export const LineButton = styled.button`
   font-size: 0.82rem;
   font-family: Jost;
@@ -19,15 +24,18 @@ export const LineButton = styled.button`
   }
 `;
 
-export const RoundedButton = styled.button`
+export const RoundedButton = styled.button<RoundedBtnProps>`
   font-size: 0.875rem;
   padding: 14px 32px;
   text-transform: uppercase;
   border-radius: 100px;
-  background-color: #aa8e66;
-  border: 1px solid #aa8e66;
+  background-color: ${(props) => props.bgColor};
+  border: ${(props) => {
+    return `1px solid ${props.bgColor}`;
+  }};
   color: #fff;
   font-weight: 600;
   cursor: pointer;
   font-family: Jost;
+  width: ${(props) => (props.fullwidth ? "100%" : null)};
 `;

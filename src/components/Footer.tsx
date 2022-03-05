@@ -145,7 +145,7 @@ const Footer: FC = () => {
               value={email}
               onChange={(ev) => setEmail(ev.target.value)}
             />
-            <RoundedButton>Subscribe</RoundedButton>
+            <RoundedButton bgColor="#aa8e66">Subscribe</RoundedButton>
           </>
         </SubscribeForm>
         <FooterMenu>

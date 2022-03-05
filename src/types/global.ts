@@ -25,3 +25,15 @@ export interface ContactFormValues {
   company: string;
   message: string;
 }
+
+export interface LoginFormvalues {
+  emailAddress: string;
+  password: string;
+}
+
+export interface RegisterFormValues {
+  emailAddress: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}

@@ -22,6 +22,13 @@ const BannerInfo = styled.div`
   padding: 0 35px;
 `;
 
+const LineBreaker = styled.span`
+  width: 100%;
+  display: inline-block;
+  border-bottom: 1px solid #eee;
+  margin-top: 0px;
+`;
+
 const BannerTitle = styled.h2`
   color: #000;
   font-size: 2.125rem;
@@ -46,6 +53,26 @@ const FeatureContainer = styled.div`
   gap: 120px;
   max-width: 1280px;
   margin: auto;
+`;
+
+const Pitch = styled.div`
+  width: 100%;
+  margin: 50px 0 80px;
+`;
+
+const PitchHeader = styled.h2`
+  margin: 0;
+  padding: 0;
+  text-align: center;
+`;
+
+const PitchBody = styled.p`
+  padding: 0;
+  text-align: center;
+  color: #666;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 20px;
 `;
 
 const About: FC = () => {
@@ -81,6 +108,32 @@ const About: FC = () => {
           );
         })}
       </FeatureContainer>
+      <LineBreaker />
+      <Pitch>
+        <PitchHeader>Why Choose Us?</PitchHeader>
+        <PitchBody>
+          For 30 years we have been selling the widest range of women's perfumes
+          and men's aftershaves at affordable prices. We stock the fragrances of
+          nearly 130 brands including Hugo Boss, Paco Rabanne, Gucci, Ariana
+          Grande and Marc Jacobs both online and across our network of over 215
+          nationwide stores. We also stock the luxury perfume brands Dior,
+          Viktor & Rolf and Hermès.
+        </PitchBody>
+        <PitchBody>
+          Not only do we have the experience of selling perfumes, we also have
+          the expertise to match. Our staff are trained and developed so that
+          they are the most knowledgeable sales advisors within the perfume
+          industry and we can even boast about having the largest number of
+          fragrance graduates nationwide.
+        </PitchBody>
+        <PitchBody>
+          Online we offer FREE standard delivery on all orders for our VIP
+          members, click and collect in 30 minutes and we've even introduced a
+          “Try Me” option on some of our most popular products where you'll
+          receive a free sample, so if you're choosing a new perfume or
+          aftershave you can smell that before you open your order.
+        </PitchBody>
+      </Pitch>
     </PageContainer>
   );
 };

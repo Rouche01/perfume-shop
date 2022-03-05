@@ -176,7 +176,9 @@ const ContactUs = () => {
                 />
               </FormRow>
             </FormBody>
-            <RoundedButton type="submit">Send Message</RoundedButton>
+            <RoundedButton bgColor="#ab8e66" type="submit">
+              Send Message
+            </RoundedButton>
           </form>
         </ContactForm>
         <ContactInfo>
@@ -213,9 +215,7 @@ const ContactUs = () => {
                   </IconWrapper>
                 }
               />
-              <InfoText>
-                info@perfumeshop.com.ng
-              </InfoText>
+              <InfoText>info@perfumeshop.com.ng</InfoText>
             </InfoItem>
           </InfoBody>
         </ContactInfo>
