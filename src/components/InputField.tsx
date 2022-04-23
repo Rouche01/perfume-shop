@@ -2,7 +2,7 @@ import React, { FC, InputHTMLAttributes } from "react";
 import { ErrorText } from "../generalStyles/index";
 import { UseFormRegister } from "react-hook-form";
 import styled from "styled-components";
-import { ContactFormValues, LoginFormvalues } from "../types/global";
+import { ContactFormValues, CustomFormValues, LoginFormvalues, RegisterFormValues } from "../types/global";
 
 const InputContainer = styled.div``;
 
@@ -40,15 +40,11 @@ const PasswordToggleIcon = styled.span`
   cursor: default;
 `;
 
-interface CustomFormValues {
-  [key: string]: any;
-}
-
 type RegisterFn<T extends CustomFormValues> = UseFormRegister<T>;
 
 interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  registerFn: RegisterFn<ContactFormValues | LoginFormvalues>;
+  registerFn: RegisterFn<ContactFormValues | LoginFormvalues | RegisterFormValues>;
   errorText?: string;
   name:
     | "name"

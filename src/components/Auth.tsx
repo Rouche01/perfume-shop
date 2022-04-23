@@ -1,13 +1,18 @@
 import React, { FC, useState } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
-import { LoginFormvalues } from "../../src/types/global";
+import {
+  CustomFormValues,
+  LoginFormvalues,
+  RegisterFormValues,
+} from "../../src/types/global";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useLoginFormValidation } from "../../src/hooks/validationSchema";
 import InputField from "../../src/components/InputField";
 import { RoundedButton } from "../../src/components/Button";
 import { FaFacebookF, FaApple, FaGoogle } from "react-icons/fa";
 import Link from "next/link";
+import Spinner from "./Spinner";
+import ErrorBox from "./ErrorBox";
 
 const AuthContainer = styled.div`
   width: 650px;
@@ -85,6 +90,8 @@ interface AuthProps {
   actionText: string;
   type: "register" | "login";
   validationSchema: any;
+  loading: boolean;
+  error: string | null;
 }
 
 const Auth: FC<AuthProps> = ({
@@ -96,16 +103,16 @@ const Auth: FC<AuthProps> = ({
   actionText,
   type,
   validationSchema,
+  loading,
+  error,
 }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormvalues>({ resolver: yupResolver(validationSchema) });
-
-  //   const handleLogin = (data: LoginFormvalues) => {
-  //     console.log(data);
-  //   };
+  } = useForm<LoginFormvalues & RegisterFormValues>({
+    resolver: yupResolver(validationSchema),
+  });
 
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
@@ -114,21 +121,35 @@ const Auth: FC<AuthProps> = ({
       <AuthTitle>{title}</AuthTitle>
       <AuthSubtitle>
         {subtitle}{" "}
-        <Link href={subtitleHref}>
+        <Link href={subtitleHref} passHref>
           <AuthLink>{subtitleLink}</AuthLink>
         </Link>
       </AuthSubtitle>
+      {error && <ErrorBox title="There was a problem" subtitle={error} />}
       <AuthForm>
         <form onSubmit={handleSubmit(formAction)}>
-        <FormRow>
-            <InputField
-              label="First name *"
-              name="firstName"
-              registerFn={register}
-              type="text"
-              errorText={errors.emailAddress?.message}
-            />
-          </FormRow>
+          {type === "register" && (
+            <>
+              <FormRow>
+                <InputField
+                  label="First name *"
+                  name="firstName"
+                  registerFn={register}
+                  type="text"
+                  errorText={errors.firstName?.message}
+                />
+              </FormRow>
+              <FormRow>
+                <InputField
+                  label="Last name *"
+                  name="lastName"
+                  registerFn={register}
+                  type="text"
+                  errorText={errors.lastName?.message}
+                />
+              </FormRow>
+            </>
+          )}
           <FormRow>
             <InputField
               label="Email address *"
@@ -156,7 +177,7 @@ const Auth: FC<AuthProps> = ({
           )}
           <FormRow>
             <RoundedButton bgColor="#ab8e66" fullwidth type="submit">
-              {actionText}
+              {!loading ? actionText : <Spinner size={1.2} />}
             </RoundedButton>
           </FormRow>
         </form>

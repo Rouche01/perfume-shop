@@ -11,21 +11,16 @@ export const Context = createContext<CurrencyContext>({
 
 export const useCurrencyContext = () => useContext(Context);
 
-export const createCurrencyContext = () => {
+export const Provider: FC = ({ children }) => {
   const [currency, setCurrency] = useState<CurrencyInfo>({
     currencyCode: "NGN",
     locale: "en-NG",
   });
-
-  const Provider: FC = ({ children }) => {
-    return (
-      <Context.Provider
-        value={{ currencyInfo: currency, setCurrencyInfo: setCurrency }}
-      >
-        {children}
-      </Context.Provider>
-    );
-  };
-
-  return { Context, Provider };
+  return (
+    <Context.Provider
+      value={{ currencyInfo: currency, setCurrencyInfo: setCurrency }}
+    >
+      {children}
+    </Context.Provider>
+  );
 };

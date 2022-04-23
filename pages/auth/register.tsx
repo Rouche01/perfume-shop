@@ -1,13 +1,22 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useEffect } from "react";
 import Auth from "../../src/components/Auth";
+import { useAuth } from "../../src/hooks/auth";
 import { useRegisterFormValidation } from "../../src/hooks/validationSchema";
 import { RegisterFormValues } from "../../src/types/global";
 
 const Register = () => {
-  const handleCreateAccount = (data: RegisterFormValues) => {
-    console.log(data);
+  const { createUser, loading, authError, setAuthError } = useAuth();
+  const handleCreateAccount = async (data: RegisterFormValues) => {
+    setAuthError(null);
+    await createUser({
+      emailAddress: data.emailAddress,
+      password: data.password,
+    });
   };
+
+  useEffect(() => {
+    return () => setAuthError(null);
+  }, [setAuthError]);
 
   const { validationSchema } = useRegisterFormValidation();
 
@@ -21,6 +30,8 @@ const Register = () => {
       type="register"
       formAction={handleCreateAccount}
       validationSchema={validationSchema}
+      loading={loading}
+      error={authError}
     />
   );
 };

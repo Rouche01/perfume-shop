@@ -245,7 +245,7 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
                 </CurrencyList>
               </CurrencyDropdown>
               <span>|</span>
-              <TopBarLink href="/login">
+              <TopBarLink href="/auth/login">
                 <a style={{ color: "#000" }}>Login or Register</a>
               </TopBarLink>
             </TopBarActions>
@@ -297,5 +297,7 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
     );
   }
 );
+
+Header.displayName = "Header";
 
 export default withClickOutside(Header);

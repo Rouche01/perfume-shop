@@ -18,6 +18,10 @@ export enum SortOptions {
   newestArrivals = "Newest Arrivals",
 }
 
+export interface CustomFormValues {
+  [key: string]: any;
+}
+
 export interface ContactFormValues {
   name: string;
   emailAddress: string;

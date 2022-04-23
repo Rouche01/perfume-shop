@@ -1,12 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Auth from "../../src/components/Auth";
+import { useAuth } from "../../src/hooks/auth";
 import { useLoginFormValidation } from "../../src/hooks/validationSchema";
 import { LoginFormvalues } from "../../src/types/global";
 
 const Login = () => {
-  const handleLogin = (data: LoginFormvalues) => {
-    console.log(data);
+  const { signIn, loading, authError, setAuthError } = useAuth();
+  const handleLogin = async (data: LoginFormvalues) => {
+    setAuthError(null);
+    await signIn(data);
   };
+
+  useEffect(() => {
+    return () => setAuthError(null);
+  }, [setAuthError]);
 
   const { validationSchema } = useLoginFormValidation();
 
@@ -20,6 +27,8 @@ const Login = () => {
       title="Login your Account"
       type="login"
       validationSchema={validationSchema}
+      loading={loading}
+      error={authError}
     />
   );
 };

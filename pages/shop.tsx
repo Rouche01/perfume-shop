@@ -74,6 +74,7 @@ const Shop: FC = () => {
       <ProductList>
         {products.map((val, idx) => (
           <ProductBox
+            key={`${idx}-${val.originalPrice}`}
             image={val.image}
             name={val.name}
             originalPrice={formatPrice(val.originalPrice)}

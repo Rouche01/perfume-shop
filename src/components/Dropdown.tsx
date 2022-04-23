@@ -137,4 +137,6 @@ const Dropdown = forwardRef<Ref, DropdownProps & WrappedComponentProps>(
   }
 );
 
+Dropdown.displayName = "Dropdown";
+
 export default withClickOutside(Dropdown);
