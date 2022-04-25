@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { Product } from "../types/product";
 import { CurrencyInfo } from "../types/global";
+import StarRating from "./StarRating";
 
 interface OriginalPriceProps {
   salesExist?: boolean;
@@ -39,17 +39,11 @@ const ProductName = styled.p`
   cursor: pointer;
 `;
 
-const StarRating = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const RatingContainer = styled.div`
+  width: 100%;
   margin-top: 14px;
-`;
-
-const RateStar = styled(({ component, ...props }) =>
-  React.cloneElement(component, props)
-)`
-  color: #ffb933;
+  display: flex;
+  justify-content: center;
 `;
 
 const PriceWrapper = styled.div`
@@ -102,17 +96,9 @@ const ProductBox: FC<
         <ProductImage src={image} />
         <ProductInfo>
           <ProductName>{name}</ProductName>
-          <StarRating>
-            {Array.from({ length: 5 }, (_, i) =>
-              i < rating ? "fill" : "outline"
-            ).map((val, idx) =>
-              val === "fill" ? (
-                <RateStar key={`${val}-${idx}`} component={<AiFillStar />} />
-              ) : (
-                <RateStar key={`${val}-${idx}`} component={<AiOutlineStar />} />
-              )
-            )}
-          </StarRating>
+          <RatingContainer>
+            <StarRating rating={rating} />
+          </RatingContainer>
           <PriceWrapper>
             <OriginalPrice salesExist={salesExist}>
               {originalPrice}

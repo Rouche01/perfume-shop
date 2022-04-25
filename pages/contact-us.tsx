@@ -2,7 +2,7 @@ import Head from "next/head";
 import React from "react";
 import styled from "styled-components";
 import Map from "../src/components/Map";
-import { PageContainer, PageTitle } from "../src/generalStyles";
+import { FormRow, PageContainer, PageTitle } from "../src/generalStyles";
 import { useForm } from "react-hook-form";
 import InputField from "../src/components/InputField";
 import TextAreaInput from "../src/components/TextArea";
@@ -15,10 +15,6 @@ import { VscMail } from "react-icons/vsc";
 
 interface SectionTitleProps {
   color: string;
-}
-interface FormRowProps {
-  columns: number;
-  mt?: number;
 }
 
 interface InfoIconProps {
@@ -52,14 +48,6 @@ const SectionTitle = styled.h2<SectionTitleProps>`
 
 const FormBody = styled.div`
   margin: 40px 0 30px;
-`;
-
-const FormRow = styled.div<FormRowProps>`
-  display: grid;
-  grid-template-columns: ${(props) =>
-    props.columns === 1 ? "1fr" : "1fr 1fr"};
-  gap: 25px;
-  margin-top: ${(props) => (props.mt ? `${props.mt}px` : 0)};
 `;
 
 const ContactInfo = styled.div`

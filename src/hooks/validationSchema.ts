@@ -39,3 +39,16 @@ export const useRegisterFormValidation = () => {
 
   return { validationSchema };
 };
+
+export const useCustomerReviewFormValidation = () => {
+  const validationSchema = Yup.object({
+    emailAddress: Yup.string()
+      .email("Must be a valid email")
+      .required("Email is required"),
+    name: Yup.string().required("Name is required"),
+    rating: Yup.number().max(5).min(1),
+    reviewComment: Yup.string().required("Review comment is required"),
+  });
+
+  return { validationSchema };
+};

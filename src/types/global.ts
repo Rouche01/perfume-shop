@@ -1,3 +1,6 @@
+import { FieldError, UseFormRegister } from "react-hook-form";
+
+export type RegisterFn<T extends CustomFormValues> = UseFormRegister<T>;
 export interface CurrencyInfo {
   locale: string;
   currencyCode: string;
@@ -28,6 +31,20 @@ export interface ContactFormValues {
   phone: string;
   company: string;
   message: string;
+}
+
+export interface CustomerReviewFormValues {
+  reviewComment: string;
+  rating?: number;
+  name: string;
+  emailAddress: string;
+}
+
+export interface CustomerReviewFormErrors {
+  reviewComment?: FieldError | undefined;
+  rating?: FieldError | undefined;
+  name?: FieldError | undefined;
+  emailAddress?: FieldError | undefined;
 }
 
 export interface LoginFormvalues {

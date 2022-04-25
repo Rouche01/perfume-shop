@@ -1,17 +1,27 @@
 import React, { FC, TextareaHTMLAttributes } from "react";
 import { ErrorText } from "../generalStyles/index";
-import { UseFormRegister } from "react-hook-form";
 import styled from "styled-components";
-import { ContactFormValues } from "../types/global";
+import {
+  ContactFormValues,
+  CustomerReviewFormValues,
+  LoginFormvalues,
+  RegisterFn,
+  RegisterFormValues,
+} from "../types/global";
+
+type LabelProps = {
+  labelSize?: number; // in rem
+  labelColor?: string; // hex color
+};
 
 const Container = styled.div``;
 
-const Label = styled.p`
+const Label = styled.p<LabelProps>`
   margin: 0;
   padding: 0;
-  font-size: 0.9rem;
+  font-size: ${({ labelSize }) => (labelSize ? `${labelSize}rem` : "0.9rem")};
   margin-bottom: 10px;
-  color: #888;
+  color: ${({ labelColor }) => (labelColor ? labelColor : "#888")};
 `;
 
 const TextArea = styled.textarea`
@@ -28,16 +38,38 @@ const TextArea = styled.textarea`
 interface TextAreaInputProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
+  labelSize?: number; // in rem
+  labelColor?: string; //hex code
   errorText?: string;
-  registerFn: UseFormRegister<ContactFormValues>;
-  name: "name" | "emailAddress" | "phone" | "company" | "message";
+  registerFn: RegisterFn<
+    | ContactFormValues
+    | CustomerReviewFormValues
+    | LoginFormvalues
+    | RegisterFormValues
+  >;
+  name:
+    | "name"
+    | "emailAddress"
+    | "phone"
+    | "company"
+    | "message"
+    | "reviewComment";
 }
 
 const TextAreaInput: FC<TextAreaInputProps> = (props) => {
-  const { label, registerFn, errorText, ...textAreaProps } = props;
+  const {
+    label,
+    labelSize,
+    labelColor,
+    registerFn,
+    errorText,
+    ...textAreaProps
+  } = props;
   return (
     <Container>
-      <Label>{label}</Label>
+      <Label labelSize={labelSize} labelColor={labelColor}>
+        {label}
+      </Label>
       <TextArea rows={10} {...textAreaProps} {...registerFn(props.name)} />
       {errorText && <ErrorText>{errorText}</ErrorText>}
     </Container>

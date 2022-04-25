@@ -1,17 +1,27 @@
 import React, { FC, InputHTMLAttributes } from "react";
 import { ErrorText } from "../generalStyles/index";
-import { UseFormRegister } from "react-hook-form";
 import styled from "styled-components";
-import { ContactFormValues, CustomFormValues, LoginFormvalues, RegisterFormValues } from "../types/global";
+import {
+  ContactFormValues,
+  CustomerReviewFormValues,
+  LoginFormvalues,
+  RegisterFn,
+  RegisterFormValues,
+} from "../types/global";
+
+type LabelProps = {
+  labelSize?: number; // in rem
+  labelColor?: string; // hex color
+};
 
 const InputContainer = styled.div``;
 
-const Label = styled.p`
+const Label = styled.p<LabelProps>`
   margin: 0;
   padding: 0;
-  font-size: 0.9rem;
+  font-size: ${({ labelSize }) => (labelSize ? `${labelSize}rem` : "0.9rem")};
   margin-bottom: 10px;
-  color: #888;
+  color: ${({ labelColor }) => (labelColor ? labelColor : "#888")};
 `;
 
 const InputWrapper = styled.div`
@@ -40,11 +50,16 @@ const PasswordToggleIcon = styled.span`
   cursor: default;
 `;
 
-type RegisterFn<T extends CustomFormValues> = UseFormRegister<T>;
-
 interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  registerFn: RegisterFn<ContactFormValues | LoginFormvalues | RegisterFormValues>;
+  labelSize?: number; // in rem
+  labelColor?: string; // hex color
+  registerFn: RegisterFn<
+    | ContactFormValues
+    | LoginFormvalues
+    | RegisterFormValues
+    | CustomerReviewFormValues
+  >;
   errorText?: string;
   name:
     | "name"
@@ -54,7 +69,8 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
     | "message"
     | "password"
     | "firstName"
-    | "lastName";
+    | "lastName"
+    | "reviewComment";
   isVisible?: boolean;
   setVisibility?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -62,6 +78,8 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 const InputField: FC<InputFieldProps> = (props) => {
   const {
     label,
+    labelColor,
+    labelSize,
     registerFn,
     errorText,
     name,
@@ -78,7 +96,9 @@ const InputField: FC<InputFieldProps> = (props) => {
 
   return (
     <InputContainer>
-      <Label>{label}</Label>
+      <Label labelColor={labelColor} labelSize={labelSize}>
+        {label}
+      </Label>
       <InputWrapper>
         <Input {...inputProps} {...registerFn(props.name)} />
         {name === "password" && (

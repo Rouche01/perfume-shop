@@ -7,3 +7,13 @@ export interface Product {
   rating: number;
   isNew?: boolean;
 }
+
+export interface ProductVariant {
+  name: string;
+  imageUrl: string;
+}
+
+export interface ProductInfoNavBarMenuList {
+  id: string;
+  name: string;
+}

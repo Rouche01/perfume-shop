@@ -1,5 +1,5 @@
 import { ShopFeature } from "../types/home";
-import { Product } from "../types/product";
+import { Product, ProductVariant } from "../types/product";
 import { VscRocket } from "react-icons/vsc";
 import {
   MdOutlineReplay,
@@ -7,6 +7,11 @@ import {
   MdOutlineDeliveryDining,
 } from "react-icons/md";
 import { CurrencyInfo } from "../types/global";
+
+export const productPageImages: ProductVariant[] = [
+  { name: "gold", imageUrl: "/products/product-item-8.jpg" },
+  { name: "pink", imageUrl: "/products/product-item-2.jpg" },
+];
 
 export const products: Product[] = [
   {
