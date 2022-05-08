@@ -1,6 +1,8 @@
 export interface Product {
   name: string;
   image: string;
+  sku: string;
+  inventorySize: number;
   originalPrice: number;
   salesPrice: number;
   salesExist: boolean;

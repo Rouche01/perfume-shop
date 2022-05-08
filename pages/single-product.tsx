@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import styled from "styled-components";
 import { PageContainer } from "../src/generalStyles";
@@ -18,6 +18,7 @@ import { useCustomerReviewFormValidation } from "../src/hooks/validationSchema";
 import { useForm } from "react-hook-form";
 import { CustomerReviewFormValues } from "../src/types/global";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useCart } from "../src/hooks/cart";
 
 type GalleryImageProps = {
   selected: boolean;
@@ -201,8 +202,8 @@ const SingleProduct = () => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
     productVariants[0]
   );
-  const [productQty, setProductQty] = useState<number>(1);
   const [activeMenu, setActiveMenu] = useState<string>("additional-info");
+  const [productQty, setProductQty] = useState<number>(0);
 
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
@@ -211,6 +212,8 @@ const SingleProduct = () => {
 
   const { currencyInfo } = useCurrencyContext();
   const { formatPrice } = useCurrencyConverter(currencyInfo);
+
+  const { addToCart } = useCart();
 
   const { validationSchema } = useCustomerReviewFormValidation();
 
@@ -262,7 +265,7 @@ const SingleProduct = () => {
           </ProductImageGallery>
         </ProductGallery>
         <ProductMeta>
-          <ProductName>Aoud Queen Roses</ProductName>
+          <ProductName>{products[7].name}</ProductName>
           <StarRating rating={products[7].rating} />
           <InventoryData>
             Availability: <span style={{ color: "#ab8e66" }}>In Stock</span>
@@ -284,8 +287,15 @@ const SingleProduct = () => {
             <CartQuantityInput
               quantity={productQty}
               setQuantity={setProductQty}
+              rounded
+              productSku={products[7].sku}
             />
-            <RoundedButton bgColor="#ab8e66">Add to Cart</RoundedButton>
+            <RoundedButton
+              onClick={() => addToCart(products[7].sku, productQty)}
+              bgColor="#ab8e66"
+            >
+              Add to Cart
+            </RoundedButton>
           </AddToCartSection>
           <AddToWishlist>
             <WishlistIcon />
@@ -321,7 +331,7 @@ const SingleProduct = () => {
           )}
           {activeMenu === "reviews" && (
             <>
-              <ReviewCount>1 Review for Aoud Queen Roses</ReviewCount>
+              <ReviewCount>1 Review for {products[7].name}</ReviewCount>
               <CustomerReview
                 userName="Cobus Bester"
                 reviewDate="June 7, 2013"

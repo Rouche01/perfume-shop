@@ -1,4 +1,4 @@
-import React, { FC, forwardRef, useState } from "react";
+import React, { FC, forwardRef, useMemo, useState } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
@@ -12,6 +12,7 @@ import { CurrencyInfo } from "../types/global";
 import withClickOutside, {
   WrappedComponentProps,
 } from "../hoc/withClickOutside";
+import { useCart } from "../hooks/cart";
 
 interface CurrencyListProps {
   show: boolean;
@@ -184,6 +185,17 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
     const [searchString, setSearchString] = useState<string | undefined>();
     const { currencyInfo, setCurrencyInfo } = useCurrencyContext();
 
+    const { cartState } = useCart();
+
+    const productQtyInCart = useMemo(
+      () =>
+        Object.values(cartState).reduce(
+          (prev, curr) => Number(prev) + Number(curr),
+          0
+        ),
+      [cartState]
+    );
+
     const handleSearchBtn = () => {
       console.log(searchString);
     };
@@ -263,7 +275,7 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
               <LinkItem href="/cart">
                 <a style={{ position: "relative" }}>
                   <CgShoppingCart size={28} color="#555555" />
-                  <CounterSpan>0</CounterSpan>
+                  <CounterSpan>{productQtyInCart}</CounterSpan>
                 </a>
               </LinkItem>
               <LinkItem href="wishlist">

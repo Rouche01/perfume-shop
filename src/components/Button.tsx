@@ -3,6 +3,11 @@ import styled from "styled-components";
 interface RoundedBtnProps {
   fullwidth?: boolean;
   bgColor: string;
+  hoverBgColor?: string;
+  hoverColor?: string;
+  color?: string;
+  borderColor?: string;
+  size?: "small" | "large";
 }
 
 export const LineButton = styled.button`
@@ -25,17 +30,23 @@ export const LineButton = styled.button`
 `;
 
 export const RoundedButton = styled.button<RoundedBtnProps>`
-  font-size: 0.875rem;
-  padding: 14px 32px;
+  font-size: ${(props) => (props.size === "small" ? "0.82rem" : "0.875rem")};
+  padding: ${(props) => (props.size === "small" ? "12px 24px" : "14px 32px")};
   text-transform: uppercase;
   border-radius: 100px;
   background-color: ${(props) => props.bgColor};
   border: ${(props) => {
-    return `1px solid ${props.bgColor}`;
+    return props.borderColor
+      ? `1px solid ${props.borderColor}`
+      : `1px solid ${props.bgColor}`;
   }};
-  color: #fff;
+  color: ${(props) => props.color || "#fff"};
   font-weight: 600;
   cursor: pointer;
   font-family: Jost;
   width: ${(props) => (props.fullwidth ? "100%" : null)};
+  &:hover {
+    background-color: ${(props) => props.hoverBgColor || props.bgColor};
+    color: ${(props) => props.hoverColor || props.color || "#fff"};
+  }
 `;

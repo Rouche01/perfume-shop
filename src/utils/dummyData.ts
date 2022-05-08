@@ -16,6 +16,8 @@ export const productPageImages: ProductVariant[] = [
 export const products: Product[] = [
   {
     name: "Super Tweeter",
+    inventorySize: 8,
+    sku: "PLU-002",
     image: "/products/product-item-1.jpg",
     originalPrice: 27300,
     salesPrice: 22000,
@@ -25,6 +27,8 @@ export const products: Product[] = [
   },
   {
     name: "Auto Accents",
+    inventorySize: 8,
+    sku: "PLU-003",
     image: "/products/product-item-2.jpg",
     originalPrice: 25000,
     salesPrice: 19000,
@@ -35,6 +39,8 @@ export const products: Product[] = [
   {
     name: "Rose Elixir",
     image: "/products/product-item-3.jpg",
+    inventorySize: 8,
+    sku: "PLU-004",
     originalPrice: 27300,
     salesPrice: 22000,
     salesExist: true,
@@ -44,6 +50,8 @@ export const products: Product[] = [
   {
     name: "Aoud Queen Roses",
     image: "/products/product-item-4.jpg",
+    inventorySize: 8,
+    sku: "PLU-005",
     originalPrice: 19000,
     salesPrice: 16500,
     salesExist: true,
@@ -53,6 +61,8 @@ export const products: Product[] = [
   {
     name: "Series Chrome",
     image: "/products/product-item-5.jpg",
+    inventorySize: 8,
+    sku: "PLU-006",
     originalPrice: 25000,
     salesPrice: 16500,
     salesExist: true,
@@ -61,6 +71,8 @@ export const products: Product[] = [
   },
   {
     name: "Shift Knob",
+    inventorySize: 8,
+    sku: "PLU-007",
     image: "/products/product-item-6.jpg",
     originalPrice: 19000,
     salesPrice: 16500,
@@ -70,6 +82,8 @@ export const products: Product[] = [
   },
   {
     name: "Tuscan Creations",
+    inventorySize: 8,
+    sku: "PLU-008",
     image: "/products/product-item-7.jpg",
     originalPrice: 22000,
     salesPrice: 19000,
@@ -79,6 +93,8 @@ export const products: Product[] = [
   },
   {
     name: "Patiala Eau",
+    inventorySize: 8,
+    sku: "PLU-001",
     image: "/products/product-item-8.jpg",
     originalPrice: 27000,
     salesPrice: 21000,
