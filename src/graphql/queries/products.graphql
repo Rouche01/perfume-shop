@@ -1,0 +1,36 @@
+query Products {
+  products {
+    data {
+      id
+      attributes {
+        name
+        mainImage {
+          data {
+            attributes {
+              url
+            }
+          }
+        }
+        otherImages {
+          data {
+            attributes {
+              url
+              formats
+            }
+          }
+        }
+        onSales
+        salesPrice
+        originalPrice
+        inventoryTracking
+        sku
+        inventorySize
+        shortDescription
+        slug
+        description
+        createdAt
+      }
+    }
+  }
+}
+

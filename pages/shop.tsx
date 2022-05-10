@@ -4,11 +4,17 @@ import styled from "styled-components";
 import { PageContainer, PageTitle } from "../src/generalStyles";
 import Dropdown from "../src/components/Dropdown";
 import { SortOptions } from "../src/types/global";
-import { products } from "../src/utils/dummyData";
 import ProductBox from "../src/components/ProductBox";
 import { useCurrencyContext } from "../src/utils/currencyProvider";
 import { useCurrencyConverter } from "../src/hooks/currency";
 import Pagination from "../src/components/Pagination";
+import { GetStaticPropsResult } from "next";
+import {
+  ProductsDocument,
+  ProductsQuery,
+  ProductsQueryVariables,
+} from "../src/graphql/generated/graphql";
+import { client } from "../src/services/apollo";
 
 const SortBar = styled.div`
   background-color: #f3f3f3;
@@ -28,7 +34,11 @@ const ProductList = styled.div`
   margin-bottom: 40px;
 `;
 
-const Shop: FC = () => {
+interface ShopProps {
+  products?: ProductsQuery["products"] | null;
+}
+
+const Shop: FC<ShopProps> = ({ products }) => {
   const [sortedBy, setSortedBy] = useState<SortOptions>(SortOptions.featured);
   const [perPage, setPerPage] = useState<number>(8);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -72,18 +82,22 @@ const Shop: FC = () => {
         />
       </SortBar>
       <ProductList>
-        {products.map((val, idx) => (
-          <ProductBox
-            key={`${idx}-${val.originalPrice}`}
-            image={val.image}
-            name={val.name}
-            originalPrice={formatPrice(val.originalPrice)}
-            rating={val.rating}
-            salesExist={val.salesExist}
-            salesPrice={formatPrice(val.salesPrice)}
-            isNew={val.isNew}
-          />
-        ))}
+        {products?.data &&
+          products.data.map((val) => (
+            <ProductBox
+              key={val.attributes?.sku}
+              image={val.attributes?.mainImage.data?.attributes?.url}
+              sku={val.attributes?.sku}
+              name={val.attributes?.name}
+              originalPrice={formatPrice(
+                val.attributes?.originalPrice as number
+              )}
+              rating={4}
+              salesExist={val.attributes?.onSales}
+              salesPrice={formatPrice(val.attributes?.salesPrice as number)}
+              isNew={true}
+            />
+          ))}
       </ProductList>
       <Pagination
         currentPage={currentPage}
@@ -94,3 +108,15 @@ const Shop: FC = () => {
 };
 
 export default Shop;
+
+export const getStaticProps = async (): Promise<
+  GetStaticPropsResult<ShopProps>
+> => {
+  const { data } = await client().query<ProductsQuery, ProductsQueryVariables>({
+    query: ProductsDocument,
+  });
+
+  return {
+    props: { products: data?.products },
+  };
+};

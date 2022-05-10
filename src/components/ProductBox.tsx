@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { Product } from "../types/product";
+import { Product } from "../graphql/generated/graphql";
 import { CurrencyInfo } from "../types/global";
 import StarRating from "./StarRating";
 
@@ -83,17 +83,29 @@ const NewTag = styled.div`
 `;
 
 interface ProductBoxProps {
+  name?: string;
+  rating: number;
+  image?: string;
+  isNew: boolean;
   originalPrice: string;
+  salesExist?: boolean;
   salesPrice: string;
+  sku?: string | null;
 }
 
-const ProductBox: FC<
-  Omit<Product, "originalPrice" | "salesPrice"> & ProductBoxProps
-> = ({ name, image, isNew, originalPrice, rating, salesExist, salesPrice }) => {
+const ProductBox: FC<ProductBoxProps> = ({
+  name,
+  image,
+  isNew,
+  originalPrice,
+  rating,
+  salesExist,
+  salesPrice,
+}) => {
   return (
     <>
       <ProductWrapper>
-        <ProductImage src={image} />
+        <ProductImage src={`http://localhost:1337${image}`} />
         <ProductInfo>
           <ProductName>{name}</ProductName>
           <RatingContainer>
