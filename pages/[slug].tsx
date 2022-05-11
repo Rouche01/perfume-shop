@@ -246,8 +246,8 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
   const { validationSchema } = useCustomerReviewFormValidation();
 
   const product = useMemo(() => {
-    return products?.data[0]
-  }, [products])
+    return products?.data[0];
+  }, [products]);
 
   const {
     register,
@@ -307,7 +307,9 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
               {formatPrice(product?.attributes?.originalPrice as number)}
             </PriceInfo>
             {product?.attributes?.onSales && (
-              <SalesPrice>{formatPrice(product?.attributes?.salesPrice as number)}</SalesPrice>
+              <SalesPrice>
+                {formatPrice(product?.attributes?.salesPrice as number)}
+              </SalesPrice>
             )}
           </PriceWrapper>
           <ProductDesc>
@@ -363,7 +365,9 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
           )}
           {activeMenu === "reviews" && (
             <>
-              <ReviewCount>1 Review for {product?.attributes?.name}</ReviewCount>
+              <ReviewCount>
+                1 Review for {product?.attributes?.name}
+              </ReviewCount>
               <CustomerReview
                 userName="Cobus Bester"
                 reviewDate="June 7, 2013"
@@ -406,7 +410,7 @@ export const getStaticPaths = async (): Promise<
 
   return {
     paths,
-    fallback: false,
+    fallback: "blocking",
   };
 };
 

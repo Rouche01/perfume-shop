@@ -9,6 +9,7 @@ import { useCurrencyContext } from "../src/utils/currencyProvider";
 import { useCurrencyConverter } from "../src/hooks/currency";
 import Pagination from "../src/components/Pagination";
 import { GetStaticPropsResult } from "next";
+import { useRouter } from "next/router";
 import {
   ProductsDocument,
   ProductsQuery,
@@ -46,6 +47,8 @@ const Shop: FC<ShopProps> = ({ products }) => {
   const { currencyInfo } = useCurrencyContext();
   const { formatPrice } = useCurrencyConverter(currencyInfo);
 
+  const router = useRouter();
+
   const handleSetSortedBy = (value: string) => {
     const newVal = Object.entries(SortOptions).find(
       ([_key, val]) => val === value
@@ -57,6 +60,10 @@ const Shop: FC<ShopProps> = ({ products }) => {
   const handleSetPerPage = (value: string) => {
     const [first] = value.split(" ");
     setPerPage(Number(first));
+  };
+
+  const onHandleProductClick = (slug: string) => {
+    router.push(`/${slug}`);
   };
 
   return (
@@ -96,6 +103,8 @@ const Shop: FC<ShopProps> = ({ products }) => {
               salesExist={val.attributes?.onSales}
               salesPrice={formatPrice(val.attributes?.salesPrice as number)}
               isNew={true}
+              slug={val.attributes?.slug!}
+              handleProductClick={onHandleProductClick}
             />
           ))}
       </ProductList>
@@ -118,5 +127,6 @@ export const getStaticProps = async (): Promise<
 
   return {
     props: { products: data?.products },
+    revalidate: 60,
   };
 };

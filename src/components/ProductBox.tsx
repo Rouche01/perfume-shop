@@ -91,6 +91,8 @@ interface ProductBoxProps {
   salesExist?: boolean;
   salesPrice: string;
   sku?: string | null;
+  slug: string;
+  handleProductClick: (slug: string) => void
 }
 
 const ProductBox: FC<ProductBoxProps> = ({
@@ -101,10 +103,12 @@ const ProductBox: FC<ProductBoxProps> = ({
   rating,
   salesExist,
   salesPrice,
+  slug,
+  handleProductClick
 }) => {
   return (
     <>
-      <ProductWrapper>
+      <ProductWrapper onClick={(_ev) => handleProductClick(slug)}>
         <ProductImage src={`http://localhost:1337${image}`} />
         <ProductInfo>
           <ProductName>{name}</ProductName>
