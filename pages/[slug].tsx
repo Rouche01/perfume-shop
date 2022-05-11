@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import styled from "styled-components";
 import { PageContainer } from "../src/generalStyles";
@@ -19,6 +19,21 @@ import { useForm } from "react-hook-form";
 import { CustomerReviewFormValues } from "../src/types/global";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCart } from "../src/hooks/cart";
+import {
+  GetStaticPathsResult,
+  GetStaticPropsContext,
+  GetStaticPropsResult,
+} from "next";
+import { client } from "../src/services/apollo";
+import {
+  ProductBySlugDocument,
+  ProductBySlugQuery,
+  ProductBySlugQueryVariables,
+  ProductEntity,
+  ProductsDocument,
+  ProductsQuery,
+  ProductsQueryVariables,
+} from "../src/graphql/generated/graphql";
 
 type GalleryImageProps = {
   selected: boolean;
@@ -30,6 +45,15 @@ type PriceInfoProps = {
 
 type InfoNavBarItemProps = {
   active?: boolean;
+};
+
+type PageParams = {
+  slug: string;
+};
+
+type Path = {
+  params: PageParams;
+  locale?: string;
 };
 
 const ProductRootContainer = styled.div`
@@ -198,7 +222,11 @@ const productInfoNavBarMenuList: ProductInfoNavBarMenuList[] = [
   { id: "reviews", name: "Reviews" },
 ];
 
-const SingleProduct = () => {
+interface ProductPageProps {
+  products?: ProductsQuery["products"] | null;
+}
+
+const ProductPage: FC<ProductPageProps> = ({ products }) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
     productVariants[0]
   );
@@ -216,6 +244,10 @@ const SingleProduct = () => {
   const { addToCart } = useCart();
 
   const { validationSchema } = useCustomerReviewFormValidation();
+
+  const product = useMemo(() => {
+    return products?.data[0]
+  }, [products])
 
   const {
     register,
@@ -265,17 +297,17 @@ const SingleProduct = () => {
           </ProductImageGallery>
         </ProductGallery>
         <ProductMeta>
-          <ProductName>{products[7].name}</ProductName>
-          <StarRating rating={products[7].rating} />
+          <ProductName>{product?.attributes?.name}</ProductName>
+          <StarRating rating={3} />
           <InventoryData>
             Availability: <span style={{ color: "#ab8e66" }}>In Stock</span>
           </InventoryData>
           <PriceWrapper>
-            <PriceInfo salesExist={products[7].salesExist}>
-              {formatPrice(products[7].originalPrice)}
+            <PriceInfo salesExist={product?.attributes?.onSales}>
+              {formatPrice(product?.attributes?.originalPrice as number)}
             </PriceInfo>
-            {products[7].salesExist && (
-              <SalesPrice>{formatPrice(products[7].salesPrice)}</SalesPrice>
+            {product?.attributes?.onSales && (
+              <SalesPrice>{formatPrice(product?.attributes?.salesPrice as number)}</SalesPrice>
             )}
           </PriceWrapper>
           <ProductDesc>
@@ -288,10 +320,10 @@ const SingleProduct = () => {
               quantity={productQty}
               setQuantity={setProductQty}
               rounded
-              productSku={products[7].sku}
+              productSku={product?.attributes?.sku!}
             />
             <RoundedButton
-              onClick={() => addToCart(products[7].sku, productQty)}
+              onClick={() => addToCart(product?.attributes?.sku!, productQty)}
               bgColor="#ab8e66"
             >
               Add to Cart
@@ -331,7 +363,7 @@ const SingleProduct = () => {
           )}
           {activeMenu === "reviews" && (
             <>
-              <ReviewCount>1 Review for {products[7].name}</ReviewCount>
+              <ReviewCount>1 Review for {product?.attributes?.name}</ReviewCount>
               <CustomerReview
                 userName="Cobus Bester"
                 reviewDate="June 7, 2013"
@@ -357,4 +389,38 @@ const SingleProduct = () => {
   );
 };
 
-export default SingleProduct;
+export default ProductPage;
+
+export const getStaticPaths = async (): Promise<
+  GetStaticPathsResult<PageParams>
+> => {
+  const {
+    data: { products },
+  } = await client().query<ProductsQuery, ProductsQueryVariables>({
+    query: ProductsDocument,
+  });
+
+  const paths = products?.data.map((product) => ({
+    params: { slug: product.attributes?.slug as string },
+  })) as Path[];
+
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export const getStaticProps = async ({
+  params,
+}: GetStaticPropsContext<PageParams>): Promise<
+  GetStaticPropsResult<ProductPageProps>
+> => {
+  const { data } = await client().query<
+    ProductBySlugQuery,
+    ProductBySlugQueryVariables
+  >({ query: ProductBySlugDocument, variables: { slug: params?.slug } });
+
+  return {
+    props: { products: data.products },
+  };
+};

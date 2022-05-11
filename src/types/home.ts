@@ -11,6 +11,7 @@ export interface HomeSlide {
 export interface CategoryNav {
   title: string;
   id: string;
+  sortBy: string;
 }
 
 export enum ShowcaseCategory {

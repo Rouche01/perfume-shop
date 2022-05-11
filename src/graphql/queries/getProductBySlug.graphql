@@ -1,5 +1,5 @@
-query Products($sortBy: [String], $page: Int, $pageSize: Int) {
-  products(sort: $sortBy, pagination: { page: $page, pageSize: $pageSize}) {
+query ProductBySlug($slug: String) {
+  products(filters: { slug: { eq: $slug } }) {
     data {
       id
       attributes {
@@ -11,6 +11,14 @@ query Products($sortBy: [String], $page: Int, $pageSize: Int) {
             }
           }
         }
+        otherImages {
+          data {
+            attributes {
+              url
+              formats
+            }
+          }
+        }
         onSales
         salesPrice
         originalPrice
@@ -19,6 +27,7 @@ query Products($sortBy: [String], $page: Int, $pageSize: Int) {
         inventorySize
         shortDescription
         slug
+        description
         createdAt
       }
     }

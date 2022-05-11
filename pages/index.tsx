@@ -2,18 +2,19 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import styled from "styled-components";
 import Carousel from "../src/components/Carousel";
-import { CategoryNav, HomeSlide, ShowcaseCategory } from "../src/types/home";
+import { CategoryNav, HomeSlide } from "../src/types/home";
 import Image from "next/image";
 import NavPill from "../src/components/NavPill";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import ProductBox from "../src/components/ProductBox";
-import { products, shopFeatures } from "../src/utils/dummyData";
+import { shopFeatures } from "../src/utils/dummyData";
 import Banner from "../src/components/Banner";
 import { LineButton } from "../src/components/Button";
 import FeatureItem from "../src/components/FeatureItem";
 import { useCurrencyConverter } from "../src/hooks/currency";
 import { useCurrencyContext } from "../src/utils/currencyProvider";
 import { PageContainer } from "../src/generalStyles";
+import { useProductsLazyQuery } from "../src/graphql/generated/graphql";
 
 const Slide = styled.div`
   background-color: #efefef;
@@ -94,14 +95,17 @@ const categoryNavigations: CategoryNav[] = [
   {
     title: "Bestseller",
     id: "BESTSELLER",
+    sortBy: "name:asc",
   },
   {
     title: "New Arrivals",
     id: "NEW_ARRIVALS",
+    sortBy: "createdAt:desc",
   },
   {
     title: "Top Rated",
     id: "TOP_RATED",
+    sortBy: "name:desc",
   },
 ];
 
@@ -133,7 +137,7 @@ const slides = (priceFormatter: (price: number) => string) => {
 
     return (
       <Slide key={`home-slides-${idx}`}>
-        <Image src={val.heroImg} width={500} height={500} />
+        <Image src={val.heroImg} width={500} height={500} alt="slideshow" />
         <SlideTextGroup>
           <SlideMajorTitle>{val.mainTitle}</SlideMajorTitle>
           <SlideSupportTitle>{subtitleJSX()}</SlideSupportTitle>
@@ -157,29 +161,30 @@ const slides = (priceFormatter: (price: number) => string) => {
 };
 
 const Home: NextPage = () => {
-  const [activeCategory, setActiveCategory] = useState<ShowcaseCategory>(
-    ShowcaseCategory.bestseller
-  );
+  const [activeCategory, setActiveCategory] = useState<CategoryNav>({
+    title: "Bestseller",
+    id: "BESTSELLER",
+    sortBy: "name:asc",
+  });
 
   const { currencyInfo } = useCurrencyContext();
   const { formatPrice } = useCurrencyConverter(currencyInfo);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const formattedSlides = useMemo(() => slides(formatPrice), [currencyInfo]);
 
-  const sortedAndFilteredProducts = () => {
-    switch (activeCategory) {
-      case ShowcaseCategory.bestseller:
-        return products;
-      case ShowcaseCategory.new:
-        const newArrivals = products.filter((product) => product.isNew);
-        return newArrivals;
-      case ShowcaseCategory.topRated:
-        const topRated = products.sort((a, b) => b.rating - a.rating);
-        return topRated;
-      default:
-        return [];
-    }
-  };
+  const [query, { data: productsPreview, loading }] = useProductsLazyQuery();
+
+  useEffect(() => {
+    const fetchSortedProducts = async (sortBy: string) =>
+      await query({ variables: { sortBy: [sortBy] } });
+
+    (async () => await fetchSortedProducts(activeCategory.sortBy))();
+  }, [activeCategory, query]);
+
+  const miniProductShowcase = useMemo(() => {
+    return productsPreview?.products?.data.slice(0, 8);
+  }, [productsPreview]);
 
   return (
     <PageContainer>
@@ -191,29 +196,29 @@ const Home: NextPage = () => {
       <Carousel slides={formattedSlides} />
       <CategoryShowcase>
         <CategoryNavContainer>
-          {categoryNavigations.map(({ title, id }) => (
+          {categoryNavigations.map((category) => (
             <NavPill
               clickFn={() => {
-                console.log(id);
-                setActiveCategory(id as ShowcaseCategory);
+                console.log(category.id);
+                setActiveCategory(category);
               }}
-              title={title}
-              key={id}
-              active={id === activeCategory}
+              title={category.title}
+              key={category.id}
+              active={category.id === activeCategory.id}
             />
           ))}
         </CategoryNavContainer>
         <CategoryProducts>
-          {sortedAndFilteredProducts().map((val, idx) => (
+          {miniProductShowcase?.map(({ id, attributes }, idx) => (
             <ProductBox
-              key={val.image}
-              name={val.name}
-              image={val.image}
-              originalPrice={formatPrice(val.originalPrice)}
-              rating={val.rating}
-              salesExist={val.salesExist}
-              salesPrice={formatPrice(val?.salesPrice)}
-              isNew={val.isNew}
+              key={attributes?.sku}
+              name={attributes?.name}
+              image={attributes?.mainImage.data?.attributes?.url}
+              originalPrice={formatPrice(attributes?.originalPrice as number)}
+              rating={3}
+              salesExist={attributes?.onSales}
+              salesPrice={formatPrice(attributes?.salesPrice as number)}
+              isNew={true}
             />
           ))}
         </CategoryProducts>
