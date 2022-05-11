@@ -19,8 +19,8 @@ export enum ProductRating {
 }
 
 export interface ProductVariant {
-  name: string;
-  imageUrl: string;
+  url?: string;
+  formats: { [key: string]: any };
 }
 
 export interface ProductInfoNavBarMenuList {

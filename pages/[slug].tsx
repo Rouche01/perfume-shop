@@ -2,7 +2,6 @@ import React, { FC, useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import styled from "styled-components";
 import { PageContainer } from "../src/generalStyles";
-import { productPageImages, products } from "../src/utils/dummyData";
 import {
   ProductInfoNavBarMenuList,
   ProductVariant,
@@ -79,10 +78,16 @@ const ProductImageGallery = styled.div`
 
 const ProductMainImage = styled.img`
   width: 100%;
+  max-height: 550px;
+  object-fit: cover;
+  object-position: top;
 `;
 
 const GalleryImage = styled.img<GalleryImageProps>`
   width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  object-position: top;
   cursor: pointer;
   border: 1px solid ${(props) => (props.selected ? "#ab8e66" : "#eee")};
 `;
@@ -189,7 +194,7 @@ const InfoNavBar = styled.ul`
 `;
 
 const InfoNavBarItem = styled.li<InfoNavBarItemProps>`
-  color: #bbb;
+  color: ${(props) => (props.active ? "#ab8e66" : "#bbb")};
   cursor: pointer;
   font-size: 1rem;
   text-transform: uppercase;
@@ -215,21 +220,18 @@ const ReviewCount = styled.h4`
   margin: 20px 0;
 `;
 
-const productVariants = productPageImages.slice(0, 3);
-
 const productInfoNavBarMenuList: ProductInfoNavBarMenuList[] = [
   { id: "additional-info", name: "Additional Information" },
   { id: "reviews", name: "Reviews" },
 ];
 
 interface ProductPageProps {
-  products?: ProductsQuery["products"] | null;
+  products?: ProductBySlugQuery["products"] | null;
 }
 
 const ProductPage: FC<ProductPageProps> = ({ products }) => {
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
-    productVariants[0]
-  );
+  const [selectedVariant, setSelectedVariant] =
+    useState<ProductVariant | null>();
   const [activeMenu, setActiveMenu] = useState<string>("additional-info");
   const [productQty, setProductQty] = useState<number>(0);
 
@@ -248,6 +250,27 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
   const product = useMemo(() => {
     return products?.data[0];
   }, [products]);
+
+  const productImages = useMemo(() => {
+    const { otherImages, mainImage } = products?.data[0].attributes || {};
+    const productVariants = otherImages?.data.map((image) => ({
+      url: image.attributes?.url,
+      formats: image.attributes?.formats,
+    }));
+    return [
+      {
+        url: mainImage?.data?.attributes?.url,
+        formats: mainImage?.data?.attributes?.formats,
+      },
+      ...(productVariants as []),
+    ].slice(0, 3);
+  }, [products]);
+
+  console.log(productImages);
+
+  useEffect(() => {
+    setSelectedVariant(productImages[0]);
+  }, [productImages]);
 
   const {
     register,
@@ -282,16 +305,18 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
       </Head>
       <ProductRootContainer>
         <ProductGallery>
-          <ProductMainImage src={selectedVariant.imageUrl} />
+          <ProductMainImage
+            src={`http://localhost:1337${selectedVariant?.url}`}
+          />
           <ProductImageGallery>
-            {productVariants.map((variant) => (
+            {productImages.map((image) => (
               <GalleryImage
+                key={image.url}
                 onClick={() => {
-                  setSelectedVariant(variant);
+                  setSelectedVariant(image);
                 }}
-                selected={variant.imageUrl === selectedVariant.imageUrl}
-                key={variant.name}
-                src={variant.imageUrl}
+                selected={image.url === selectedVariant?.url}
+                src={`http://localhost:1337${image.url}`}
               />
             ))}
           </ProductImageGallery>
@@ -312,11 +337,7 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
               </SalesPrice>
             )}
           </PriceWrapper>
-          <ProductDesc>
-            After getting your products delivered, you will be able to rate and
-            review them. Your feedback will be published on the product page to
-            help all Jumia users get the best shopping experience!
-          </ProductDesc>
+          <ProductDesc>{product?.attributes?.shortDescription}</ProductDesc>
           <AddToCartSection>
             <CartQuantityInput
               quantity={productQty}
@@ -352,15 +373,7 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
         <NavbarContent>
           {activeMenu === "additional-info" && (
             <AdditionalInfoTab>
-              Quisque quis ipsum venenatis, fermentum ante volutpat, ornare
-              enim. Phasellus molestie risus non aliquet cursus. Integer
-              vestibulum mi lorem, id hendrerit ante lobortis non. Nunc ante
-              ante, lobortis non pretium non, vulputate vel nisi. Maecenas dolor
-              elit, fringilla nec turpis ac, auctor vulputate nulla. Phasellus
-              sed laoreet velit. Proin fringilla urna vel mattis euismod. Etiam
-              sodales, massa non tincidunt iaculis, mauris libero scelerisque
-              justo, ut rutrum lectus urna sit amet quam. Nulla maximus
-              vestibulum mi vitae accumsan.
+              {product?.attributes?.description}
             </AdditionalInfoTab>
           )}
           {activeMenu === "reviews" && (

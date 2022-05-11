@@ -8,6 +8,7 @@ query ProductBySlug($slug: String) {
           data {
             attributes {
               url
+              formats
             }
           }
         }
