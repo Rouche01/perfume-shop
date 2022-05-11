@@ -1,7 +1,5 @@
 import React, { FC } from "react";
 import styled from "styled-components";
-import { Product } from "../graphql/generated/graphql";
-import { CurrencyInfo } from "../types/global";
 import StarRating from "./StarRating";
 
 interface OriginalPriceProps {
