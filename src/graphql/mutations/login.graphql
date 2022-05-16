@@ -1,5 +1,5 @@
-mutation Login($input: String) {
-  customLogin (input: {token: $input}) {
+mutation Login($firebaseToken: String) {
+  customLogin (input: {token: $firebaseToken}) {
     userData {
       jwt
       user {

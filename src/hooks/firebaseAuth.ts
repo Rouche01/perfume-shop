@@ -8,18 +8,18 @@ import {
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import auth from "../services/firebase";
-import { UserData } from "../types/auth";
+import { FirebaseUserData } from "../types/auth";
 import { LoginFormvalues } from "../types/global";
 
 type FirebaseUser = User & { accessToken?: string };
 
 export const useFirebaseAuth = () => {
-  const [authUser, setAuthUser] = useState<UserData | null>(null);
+  const [firebaseAuthUser, setFirebaseAuthUser] =
+    useState<FirebaseUserData | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const signIn = async ({ emailAddress, password }: LoginFormvalues) => {
-    setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(
         auth,
@@ -60,7 +60,7 @@ export const useFirebaseAuth = () => {
 
   const signoutUser = async () => {
     await signOut(auth);
-    setAuthUser(null);
+    setFirebaseAuthUser(null);
   };
 
   const formatUser = (user: FirebaseUser) => ({
@@ -73,14 +73,14 @@ export const useFirebaseAuth = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (authData: FirebaseUser | null) => {
       if (!authData) {
-        setAuthUser(null);
+        setFirebaseAuthUser(null);
         return;
       }
 
       console.log(authData);
 
       const formattedUser = formatUser(authData);
-      setAuthUser(formattedUser);
+      setFirebaseAuthUser(formattedUser);
     });
   }, []);
 
@@ -88,9 +88,10 @@ export const useFirebaseAuth = () => {
     signIn,
     createUser,
     signoutUser,
-    authUser,
+    firebaseAuthUser,
     authError,
     setAuthError,
     loading,
+    setLoading,
   };
 };
