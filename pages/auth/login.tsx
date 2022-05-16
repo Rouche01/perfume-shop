@@ -5,10 +5,11 @@ import { useLoginFormValidation } from "../../src/hooks/validationSchema";
 import { LoginFormvalues } from "../../src/types/global";
 
 const Login = () => {
-  const { signIn, loading, authError, setAuthError } = useAuth();
+  const { signIn, loading, authError, setAuthError, authUser } = useAuth();
   const handleLogin = async (data: LoginFormvalues) => {
     setAuthError(null);
-    await signIn(data);
+    const accessToken = await signIn(data);
+    console.log("at", accessToken);
   };
 
   useEffect(() => {

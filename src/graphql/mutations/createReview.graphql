@@ -1,0 +1,28 @@
+mutation CreateReview($review: ReviewInput!) {
+  createReview(data: $review) {
+    data {
+      id
+      attributes {
+        name
+        email
+        comment
+        product {
+          data {
+            id
+            attributes {
+              name
+            }
+          }
+        }
+        users_permissions_user {
+          data {
+            id
+            attributes {
+              username
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -5,12 +5,13 @@ import { PageContainer, PageTitle } from "../src/generalStyles";
 import CartItem from "../src/components/CartItem";
 import { useCart } from "../src/hooks/cart";
 import CouponForm from "../src/components/CouponForm";
-import { products } from "../src/utils/dummyData";
-import { Product } from "../src/types/product";
 import { ProductsInCart } from "../src/types/cart";
 import { useCurrencyContext } from "../src/utils/currencyProvider";
 import { useCurrencyConverter } from "../src/hooks/currency";
 import { RoundedButton } from "../src/components/Button";
+import { GetStaticPropsResult } from "next";
+import { ProductEntity, ProductsDocument, ProductsQuery, ProductsQueryVariables } from "../src/graphql/generated/graphql";
+import { client } from "../src/services/apollo";
 
 const CartContainer = styled.div`
   width: 100%;
@@ -47,7 +48,11 @@ const CartButtons = styled.div`
   margin-bottom: 100px;
 `;
 
-const Cart: FC = () => {
+interface CartProps {
+  products?: ProductsQuery["products"] | null;
+}
+
+const Cart: FC<CartProps> = ({ products }) => {
   const { cartState } = useCart();
   const [couponCode, setCouponCode] = useState<string>("");
 
@@ -57,15 +62,15 @@ const Cart: FC = () => {
   const productsInCart: ProductsInCart[] = useMemo(
     () =>
       Object.keys(cartState).map((sku) => {
-        const { image, name, originalPrice, salesExist, salesPrice } =
-          products.find((product) => product.sku === sku) as Product;
+        const product = (products?.data.find((product) => product.attributes?.sku === sku)) as ProductEntity;
+        const { attributes, id  } = product
         return {
-          name,
-          cumulativePrice: salesExist
-            ? cartState[sku] * salesPrice
-            : cartState[sku] * originalPrice,
+          name: attributes?.name,
+          cumulativePrice: attributes?.onSales
+            ? cartState[sku] * Number(attributes?.salesPrice)
+            : cartState[sku] * Number(attributes?.originalPrice),
           quantity: cartState[sku],
-          image,
+          image: attributes?.mainImage.data?.attributes?.url,
           sku,
         };
       }),
@@ -76,7 +81,7 @@ const Cart: FC = () => {
     () =>
       productsInCart
         .map((product) => product.cumulativePrice)
-        .reduce((prev, curr) => curr + prev),
+        .reduce((prev, curr) => curr + prev, 0),
     [productsInCart]
   );
 
@@ -94,10 +99,10 @@ const Cart: FC = () => {
             <CartItem
               key={sku}
               sku={sku}
-              name={name}
+              name={name!}
               cumulativePrice={cumulativePrice}
               quantity={quantity}
-              image={image}
+              image={image!}
             />
           )
         )}
@@ -135,3 +140,16 @@ const Cart: FC = () => {
 };
 
 export default Cart;
+
+export const getStaticProps = async (): Promise<
+  GetStaticPropsResult<CartProps>
+> => {
+  const { data } = await client().query<ProductsQuery, ProductsQueryVariables>({
+    query: ProductsDocument,
+  });
+
+  return {
+    props: { products: data?.products },
+    revalidate: 60,
+  };
+};

@@ -15,8 +15,8 @@ export interface CartContext {
 }
 
 export interface ProductsInCart {
-  name: string;
-  image: string;
+  name?: string;
+  image?: string;
   sku: string;
   cumulativePrice: number;
   quantity: number;

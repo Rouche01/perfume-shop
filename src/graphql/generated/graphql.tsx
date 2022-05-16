@@ -52,6 +52,12 @@ export type BooleanFilterInput = {
   startsWith?: InputMaybe<Scalars["Boolean"]>;
 };
 
+export type CustomLoginResponse = {
+  __typename?: "CustomLoginResponse";
+  error?: Maybe<ErrorData>;
+  userData?: Maybe<UserData>;
+};
+
 export type DateTimeFilterInput = {
   and?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]>>>;
   between?: InputMaybe<Array<InputMaybe<Scalars["DateTime"]>>>;
@@ -82,6 +88,11 @@ export enum Enum_Product_Rating {
   Three = "three",
   Two = "two",
 }
+
+export type ErrorData = {
+  __typename?: "ErrorData";
+  message?: Maybe<Scalars["String"]>;
+};
 
 export type FileInfoInput = {
   alternativeText?: InputMaybe<Scalars["String"]>;
@@ -116,6 +127,7 @@ export type GenericMorph =
   | I18NLocale
   | Product
   | ProductCategory
+  | Review
   | UploadFile
   | UsersPermissionsPermission
   | UsersPermissionsRole
@@ -253,13 +265,16 @@ export type Mutation = {
   __typename?: "Mutation";
   createProduct?: Maybe<ProductEntityResponse>;
   createProductCategory?: Maybe<ProductCategoryEntityResponse>;
+  createReview?: Maybe<ReviewEntityResponse>;
   createUploadFile?: Maybe<UploadFileEntityResponse>;
   /** Create a new role */
   createUsersPermissionsRole?: Maybe<UsersPermissionsCreateRolePayload>;
   /** Create a new user */
   createUsersPermissionsUser: UsersPermissionsUserEntityResponse;
+  customLogin?: Maybe<CustomLoginResponse>;
   deleteProduct?: Maybe<ProductEntityResponse>;
   deleteProductCategory?: Maybe<ProductCategoryEntityResponse>;
+  deleteReview?: Maybe<ReviewEntityResponse>;
   deleteUploadFile?: Maybe<UploadFileEntityResponse>;
   /** Delete an existing role */
   deleteUsersPermissionsRole?: Maybe<UsersPermissionsDeleteRolePayload>;
@@ -279,6 +294,7 @@ export type Mutation = {
   updateFileInfo: UploadFileEntityResponse;
   updateProduct?: Maybe<ProductEntityResponse>;
   updateProductCategory?: Maybe<ProductCategoryEntityResponse>;
+  updateReview?: Maybe<ReviewEntityResponse>;
   updateUploadFile?: Maybe<UploadFileEntityResponse>;
   /** Update an existing role */
   updateUsersPermissionsRole?: Maybe<UsersPermissionsUpdateRolePayload>;
@@ -295,6 +311,10 @@ export type MutationCreateProductCategoryArgs = {
   data: ProductCategoryInput;
 };
 
+export type MutationCreateReviewArgs = {
+  data: ReviewInput;
+};
+
 export type MutationCreateUploadFileArgs = {
   data: UploadFileInput;
 };
@@ -307,11 +327,19 @@ export type MutationCreateUsersPermissionsUserArgs = {
   data: UsersPermissionsUserInput;
 };
 
+export type MutationCustomLoginArgs = {
+  input?: InputMaybe<CustomLoginInput>;
+};
+
 export type MutationDeleteProductArgs = {
   id: Scalars["ID"];
 };
 
 export type MutationDeleteProductCategoryArgs = {
+  id: Scalars["ID"];
+};
+
+export type MutationDeleteReviewArgs = {
   id: Scalars["ID"];
 };
 
@@ -375,6 +403,11 @@ export type MutationUpdateProductCategoryArgs = {
   id: Scalars["ID"];
 };
 
+export type MutationUpdateReviewArgs = {
+  data: ReviewInput;
+  id: Scalars["ID"];
+};
+
 export type MutationUpdateUploadFileArgs = {
   data: UploadFileInput;
   id: Scalars["ID"];
@@ -427,6 +460,7 @@ export type Product = {
   product_categories?: Maybe<ProductCategoryRelationResponseCollection>;
   publishedAt?: Maybe<Scalars["DateTime"]>;
   rating?: Maybe<Enum_Product_Rating>;
+  reviews?: Maybe<ReviewRelationResponseCollection>;
   salesPrice?: Maybe<Scalars["Float"]>;
   shortDescription: Scalars["String"];
   sku?: Maybe<Scalars["String"]>;
@@ -444,6 +478,12 @@ export type ProductProduct_CategoriesArgs = {
   filters?: InputMaybe<ProductCategoryFiltersInput>;
   pagination?: InputMaybe<PaginationArg>;
   publicationState?: InputMaybe<PublicationState>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+};
+
+export type ProductReviewsArgs = {
+  filters?: InputMaybe<ReviewFiltersInput>;
+  pagination?: InputMaybe<PaginationArg>;
   sort?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
 };
 
@@ -535,6 +575,7 @@ export type ProductFiltersInput = {
   product_categories?: InputMaybe<ProductCategoryFiltersInput>;
   publishedAt?: InputMaybe<DateTimeFilterInput>;
   rating?: InputMaybe<StringFilterInput>;
+  reviews?: InputMaybe<ReviewFiltersInput>;
   salesPrice?: InputMaybe<FloatFilterInput>;
   shortDescription?: InputMaybe<StringFilterInput>;
   sku?: InputMaybe<StringFilterInput>;
@@ -554,6 +595,7 @@ export type ProductInput = {
   product_categories?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
   publishedAt?: InputMaybe<Scalars["DateTime"]>;
   rating?: InputMaybe<Enum_Product_Rating>;
+  reviews?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
   salesPrice?: InputMaybe<Scalars["Float"]>;
   shortDescription?: InputMaybe<Scalars["String"]>;
   sku?: InputMaybe<Scalars["String"]>;
@@ -579,6 +621,8 @@ export type Query = {
   productCategories?: Maybe<ProductCategoryEntityResponseCollection>;
   productCategory?: Maybe<ProductCategoryEntityResponse>;
   products?: Maybe<ProductEntityResponseCollection>;
+  review?: Maybe<ReviewEntityResponse>;
+  reviews?: Maybe<ReviewEntityResponseCollection>;
   uploadFile?: Maybe<UploadFileEntityResponse>;
   uploadFiles?: Maybe<UploadFileEntityResponseCollection>;
   usersPermissionsRole?: Maybe<UsersPermissionsRoleEntityResponse>;
@@ -619,6 +663,16 @@ export type QueryProductsArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
 };
 
+export type QueryReviewArgs = {
+  id?: InputMaybe<Scalars["ID"]>;
+};
+
+export type QueryReviewsArgs = {
+  filters?: InputMaybe<ReviewFiltersInput>;
+  pagination?: InputMaybe<PaginationArg>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+};
+
 export type QueryUploadFileArgs = {
   id?: InputMaybe<Scalars["ID"]>;
 };
@@ -652,6 +706,61 @@ export type QueryUsersPermissionsUsersArgs = {
 export type ResponseCollectionMeta = {
   __typename?: "ResponseCollectionMeta";
   pagination: Pagination;
+};
+
+export type Review = {
+  __typename?: "Review";
+  comment: Scalars["String"];
+  createdAt?: Maybe<Scalars["DateTime"]>;
+  email?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  product?: Maybe<ProductEntityResponse>;
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+  users_permissions_user?: Maybe<UsersPermissionsUserEntityResponse>;
+};
+
+export type ReviewEntity = {
+  __typename?: "ReviewEntity";
+  attributes?: Maybe<Review>;
+  id?: Maybe<Scalars["ID"]>;
+};
+
+export type ReviewEntityResponse = {
+  __typename?: "ReviewEntityResponse";
+  data?: Maybe<ReviewEntity>;
+};
+
+export type ReviewEntityResponseCollection = {
+  __typename?: "ReviewEntityResponseCollection";
+  data: Array<ReviewEntity>;
+  meta: ResponseCollectionMeta;
+};
+
+export type ReviewFiltersInput = {
+  and?: InputMaybe<Array<InputMaybe<ReviewFiltersInput>>>;
+  comment?: InputMaybe<StringFilterInput>;
+  createdAt?: InputMaybe<DateTimeFilterInput>;
+  email?: InputMaybe<StringFilterInput>;
+  id?: InputMaybe<IdFilterInput>;
+  name?: InputMaybe<StringFilterInput>;
+  not?: InputMaybe<ReviewFiltersInput>;
+  or?: InputMaybe<Array<InputMaybe<ReviewFiltersInput>>>;
+  product?: InputMaybe<ProductFiltersInput>;
+  updatedAt?: InputMaybe<DateTimeFilterInput>;
+  users_permissions_user?: InputMaybe<UsersPermissionsUserFiltersInput>;
+};
+
+export type ReviewInput = {
+  comment?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<Scalars["String"]>;
+  product?: InputMaybe<Scalars["ID"]>;
+  users_permissions_user?: InputMaybe<Scalars["ID"]>;
+};
+
+export type ReviewRelationResponseCollection = {
+  __typename?: "ReviewRelationResponseCollection";
+  data: Array<ReviewEntity>;
 };
 
 export type StringFilterInput = {
@@ -758,6 +867,22 @@ export type UploadFileInput = {
 export type UploadFileRelationResponseCollection = {
   __typename?: "UploadFileRelationResponseCollection";
   data: Array<UploadFileEntity>;
+};
+
+export type User = {
+  __typename?: "User";
+  blocked?: Maybe<Scalars["Boolean"]>;
+  confirmed?: Maybe<Scalars["Boolean"]>;
+  createdAt?: Maybe<Scalars["String"]>;
+  id?: Maybe<Scalars["Int"]>;
+  updatedAt?: Maybe<Scalars["String"]>;
+  username?: Maybe<Scalars["String"]>;
+};
+
+export type UserData = {
+  __typename?: "UserData";
+  jwt?: Maybe<Scalars["String"]>;
+  user?: Maybe<User>;
 };
 
 export type UsersPermissionsCreateRolePayload = {
@@ -915,9 +1040,16 @@ export type UsersPermissionsUser = {
   createdAt?: Maybe<Scalars["DateTime"]>;
   email: Scalars["String"];
   provider?: Maybe<Scalars["String"]>;
+  reviews?: Maybe<ReviewRelationResponseCollection>;
   role?: Maybe<UsersPermissionsRoleEntityResponse>;
   updatedAt?: Maybe<Scalars["DateTime"]>;
   username: Scalars["String"];
+};
+
+export type UsersPermissionsUserReviewsArgs = {
+  filters?: InputMaybe<ReviewFiltersInput>;
+  pagination?: InputMaybe<PaginationArg>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
 };
 
 export type UsersPermissionsUserEntity = {
@@ -950,6 +1082,7 @@ export type UsersPermissionsUserFiltersInput = {
   password?: InputMaybe<StringFilterInput>;
   provider?: InputMaybe<StringFilterInput>;
   resetPasswordToken?: InputMaybe<StringFilterInput>;
+  reviews?: InputMaybe<ReviewFiltersInput>;
   role?: InputMaybe<UsersPermissionsRoleFiltersInput>;
   updatedAt?: InputMaybe<DateTimeFilterInput>;
   username?: InputMaybe<StringFilterInput>;
@@ -963,6 +1096,7 @@ export type UsersPermissionsUserInput = {
   password?: InputMaybe<Scalars["String"]>;
   provider?: InputMaybe<Scalars["String"]>;
   resetPasswordToken?: InputMaybe<Scalars["String"]>;
+  reviews?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
   role?: InputMaybe<Scalars["ID"]>;
   username?: InputMaybe<Scalars["String"]>;
 };
@@ -970,6 +1104,73 @@ export type UsersPermissionsUserInput = {
 export type UsersPermissionsUserRelationResponseCollection = {
   __typename?: "UsersPermissionsUserRelationResponseCollection";
   data: Array<UsersPermissionsUserEntity>;
+};
+
+export type CustomLoginInput = {
+  token?: InputMaybe<Scalars["String"]>;
+};
+
+export type CreateReviewMutationVariables = Exact<{
+  review: ReviewInput;
+}>;
+
+export type CreateReviewMutation = {
+  __typename?: "Mutation";
+  createReview?: {
+    __typename?: "ReviewEntityResponse";
+    data?: {
+      __typename?: "ReviewEntity";
+      id?: string | null;
+      attributes?: {
+        __typename?: "Review";
+        name?: string | null;
+        email?: string | null;
+        comment: string;
+        product?: {
+          __typename?: "ProductEntityResponse";
+          data?: {
+            __typename?: "ProductEntity";
+            id?: string | null;
+            attributes?: { __typename?: "Product"; name: string } | null;
+          } | null;
+        } | null;
+        users_permissions_user?: {
+          __typename?: "UsersPermissionsUserEntityResponse";
+          data?: {
+            __typename?: "UsersPermissionsUserEntity";
+            id?: string | null;
+            attributes?: {
+              __typename?: "UsersPermissionsUser";
+              username: string;
+            } | null;
+          } | null;
+        } | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
+export type LoginMutationVariables = Exact<{
+  input?: InputMaybe<Scalars["String"]>;
+}>;
+
+export type LoginMutation = {
+  __typename?: "Mutation";
+  customLogin?: {
+    __typename?: "CustomLoginResponse";
+    userData?: {
+      __typename?: "UserData";
+      jwt?: string | null;
+      user?: {
+        __typename?: "User";
+        id?: number | null;
+        username?: string | null;
+        confirmed?: boolean | null;
+        createdAt?: string | null;
+      } | null;
+    } | null;
+    error?: { __typename?: "ErrorData"; message?: string | null } | null;
+  } | null;
 };
 
 export type ProductBySlugQueryVariables = Exact<{
@@ -1062,6 +1263,137 @@ export type ProductsQuery = {
   } | null;
 };
 
+export const CreateReviewDocument = gql`
+  mutation CreateReview($review: ReviewInput!) {
+    createReview(data: $review) {
+      data {
+        id
+        attributes {
+          name
+          email
+          comment
+          product {
+            data {
+              id
+              attributes {
+                name
+              }
+            }
+          }
+          users_permissions_user {
+            data {
+              id
+              attributes {
+                username
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export type CreateReviewMutationFn = Apollo.MutationFunction<
+  CreateReviewMutation,
+  CreateReviewMutationVariables
+>;
+
+/**
+ * __useCreateReviewMutation__
+ *
+ * To run a mutation, you first call `useCreateReviewMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateReviewMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createReviewMutation, { data, loading, error }] = useCreateReviewMutation({
+ *   variables: {
+ *      review: // value for 'review'
+ *   },
+ * });
+ */
+export function useCreateReviewMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateReviewMutation,
+    CreateReviewMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateReviewMutation,
+    CreateReviewMutationVariables
+  >(CreateReviewDocument, options);
+}
+export type CreateReviewMutationHookResult = ReturnType<
+  typeof useCreateReviewMutation
+>;
+export type CreateReviewMutationResult =
+  Apollo.MutationResult<CreateReviewMutation>;
+export type CreateReviewMutationOptions = Apollo.BaseMutationOptions<
+  CreateReviewMutation,
+  CreateReviewMutationVariables
+>;
+export const LoginDocument = gql`
+  mutation Login($input: String) {
+    customLogin(input: { token: $input }) {
+      userData {
+        jwt
+        user {
+          id
+          username
+          confirmed
+          createdAt
+        }
+      }
+      error {
+        message
+      }
+    }
+  }
+`;
+export type LoginMutationFn = Apollo.MutationFunction<
+  LoginMutation,
+  LoginMutationVariables
+>;
+
+/**
+ * __useLoginMutation__
+ *
+ * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginMutation, { data, loading, error }] = useLoginMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useLoginMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    LoginMutation,
+    LoginMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<LoginMutation, LoginMutationVariables>(
+    LoginDocument,
+    options
+  );
+}
+export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
+export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
+export type LoginMutationOptions = Apollo.BaseMutationOptions<
+  LoginMutation,
+  LoginMutationVariables
+>;
 export const ProductBySlugDocument = gql`
   query ProductBySlug($slug: String) {
     products(filters: { slug: { eq: $slug } }) {

@@ -90,7 +90,7 @@ const CartItem: FC<CartItemProps> = ({
 
   return (
     <Container>
-      <ProductImage src="/products/product-item-1.jpg" alt="product" />
+      <ProductImage src={`http://localhost:1337${image}`} alt="product" />
       <ProductMeta>
         <ProductName>{name}</ProductName>
         <ProductDesc>Eau de Parfum for women 100 ml</ProductDesc>
