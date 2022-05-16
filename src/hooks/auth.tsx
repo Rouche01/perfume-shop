@@ -2,7 +2,7 @@ import { createContext, FC, useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { useLoginMutation, UserData } from "../graphql/generated/graphql";
 import { AuthData } from "../types/auth";
-import { LoginFormvalues } from "../types/global";
+import { LoginFormvalues, RegisterFormValues } from "../types/global";
 import {
   AUTH_INFO_KEY,
   getAuthDataFromLocal,
@@ -17,14 +17,14 @@ const AuthContext = createContext<AuthData>({
   setAuthError: () => {},
   loading: false,
   modSignIn: async () => {},
-  createUser: async () => {},
+  modCreateUser: async () => {},
   modSignOut: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: FC = ({ children }) => {
-  const { signIn, signoutUser, setAuthError, setLoading, ...rest } =
+  const { signIn, signoutUser, createUser, setAuthError, setLoading, ...rest } =
     useFirebaseAuth();
   const [login, {}] = useLoginMutation();
 
@@ -73,9 +73,25 @@ export const AuthProvider: FC = ({ children }) => {
     router.push("/login");
   };
 
+  const modCreateUser = async ({
+    emailAddress,
+    password,
+    firstName,
+    lastName,
+  }: RegisterFormValues) => {
+    const firebaseToken = await createUser({ emailAddress, password });
+  };
+
   return (
     <AuthContext.Provider
-      value={{ modSignIn, modSignOut, setAuthError, authUser, ...rest }}
+      value={{
+        modSignIn,
+        modSignOut,
+        modCreateUser,
+        setAuthError,
+        authUser,
+        ...rest,
+      }}
     >
       {children}
     </AuthContext.Provider>

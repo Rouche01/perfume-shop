@@ -1,0 +1,16 @@
+mutation Register($input: customRegisterInput) {
+  customRegister(input: $input) {
+    userData {
+      jwt
+      user {
+        id
+        username
+        confirmed
+        createdAt
+      }
+    }
+    error {
+      message
+    }
+  }
+}

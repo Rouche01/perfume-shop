@@ -26,7 +26,6 @@ export const useFirebaseAuth = () => {
         emailAddress,
         password
       );
-      setLoading(false);
       //@ts-ignore
       return response.user.accessToken;
     } catch (err: FirebaseError | any) {
@@ -44,8 +43,13 @@ export const useFirebaseAuth = () => {
   const createUser = async ({ emailAddress, password }: LoginFormvalues) => {
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, emailAddress, password);
-      setLoading(false);
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        emailAddress,
+        password
+      );
+      // @ts-ignore
+      return response.user.accessToken
     } catch (err: FirebaseError | any) {
       setLoading(false);
       if (err instanceof FirebaseError) {
