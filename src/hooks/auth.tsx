@@ -1,6 +1,10 @@
 import { createContext, FC, useContext, useState } from "react";
 import { useRouter } from "next/router";
-import { useLoginMutation, UserData } from "../graphql/generated/graphql";
+import {
+  useLoginMutation,
+  UserData,
+  useRegisterMutation,
+} from "../graphql/generated/graphql";
 import { AuthData } from "../types/auth";
 import { LoginFormvalues, RegisterFormValues } from "../types/global";
 import {
@@ -27,6 +31,7 @@ export const AuthProvider: FC = ({ children }) => {
   const { signIn, signoutUser, createUser, setAuthError, setLoading, ...rest } =
     useFirebaseAuth();
   const [login, {}] = useLoginMutation();
+  const [register, {}] = useRegisterMutation();
 
   const router = useRouter();
 
@@ -79,7 +84,32 @@ export const AuthProvider: FC = ({ children }) => {
     firstName,
     lastName,
   }: RegisterFormValues) => {
+    setLoading(true);
     const firebaseToken = await createUser({ emailAddress, password });
+
+    const response = await register({
+      variables: { input: { firstName, lastName, token: firebaseToken } },
+    });
+
+    if (response.data?.customRegister?.error) {
+      const { message } = response.data.customRegister.error;
+      if (message) {
+        setAuthError(message);
+      } else {
+        setAuthError("Something went wrong");
+      }
+      setLoading(false);
+    }
+
+    if (response.data?.customRegister?.userData) {
+      const { userData } = response.data.customRegister;
+
+      saveAuthData(userData);
+      setAuthUser(userData);
+      setLoading(false);
+
+      router.push("/shop");
+    }
   };
 
   return (

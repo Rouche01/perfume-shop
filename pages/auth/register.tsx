@@ -5,13 +5,10 @@ import { useRegisterFormValidation } from "../../src/hooks/validationSchema";
 import { RegisterFormValues } from "../../src/types/global";
 
 const Register = () => {
-  const { createUser, loading, authError, setAuthError } = useAuth();
+  const { modCreateUser, loading, authError, setAuthError } = useAuth();
   const handleCreateAccount = async (data: RegisterFormValues) => {
     setAuthError(null);
-    await createUser({
-      emailAddress: data.emailAddress,
-      password: data.password,
-    });
+    await modCreateUser(data);
   };
 
   useEffect(() => {

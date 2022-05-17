@@ -41,7 +41,6 @@ export const useFirebaseAuth = () => {
   };
 
   const createUser = async ({ emailAddress, password }: LoginFormvalues) => {
-    setLoading(true);
     try {
       const response = await createUserWithEmailAndPassword(
         auth,
@@ -49,7 +48,7 @@ export const useFirebaseAuth = () => {
         password
       );
       // @ts-ignore
-      return response.user.accessToken
+      return response.user.accessToken;
     } catch (err: FirebaseError | any) {
       setLoading(false);
       if (err instanceof FirebaseError) {
@@ -80,8 +79,6 @@ export const useFirebaseAuth = () => {
         setFirebaseAuthUser(null);
         return;
       }
-
-      console.log(authData);
 
       const formattedUser = formatUser(authData);
       setFirebaseAuthUser(formattedUser);
