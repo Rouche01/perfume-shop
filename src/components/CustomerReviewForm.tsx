@@ -12,6 +12,7 @@ import {
 } from "../types/global";
 import { RoundedButton } from "./Button";
 import InputField from "./InputField";
+import Spinner from "./Spinner";
 import StarRatingInput from "./StarRatingInput";
 import TextAreaInput from "./TextArea";
 
@@ -49,9 +50,10 @@ interface CustomerReviewFormProps {
   formErrors: CustomerReviewFormErrors;
   reviewRating: number;
   reviewHoverRating: number;
-  setReviewRating: React.Dispatch<React.SetStateAction<number>>;
+  setReviewRating: (stars: number) => void;
   setReviewHoverRating: React.Dispatch<React.SetStateAction<number>>;
   starRatingError?: string;
+  isSubmitting: boolean;
 }
 
 const CustomerReviewForm: FC<CustomerReviewFormProps> = ({
@@ -64,6 +66,7 @@ const CustomerReviewForm: FC<CustomerReviewFormProps> = ({
   setReviewHoverRating,
   setReviewRating,
   starRatingError,
+  isSubmitting,
 }) => {
   return (
     <Container>
@@ -113,7 +116,7 @@ const CustomerReviewForm: FC<CustomerReviewFormProps> = ({
         </FormRow>
         <div style={{ marginTop: "28px" }}>
           <RoundedButton bgColor="#ab8e66" type="submit">
-            Submit
+            {isSubmitting ? <Spinner size={1.1} /> : "Submit"}
           </RoundedButton>
         </div>
       </form>

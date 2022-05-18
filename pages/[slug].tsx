@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import { PageContainer } from "../src/generalStyles";
 import {
@@ -11,7 +12,6 @@ import { useCurrencyConverter } from "../src/hooks/currency";
 import { useCurrencyContext } from "../src/utils/currencyProvider";
 import CartQuantityInput from "../src/components/CartQuantityInput";
 import { RoundedButton } from "../src/components/Button";
-import CustomerReview from "../src/components/CustomerReview";
 import CustomerReviewForm from "../src/components/CustomerReviewForm";
 import { useCustomerReviewFormValidation } from "../src/hooks/validationSchema";
 import { useForm } from "react-hook-form";
@@ -25,14 +25,24 @@ import {
 } from "next";
 import { client } from "../src/services/apollo";
 import {
+  Enum_Review_Rating,
+  GetProductReviewsByProductIdDocument,
   ProductBySlugDocument,
   ProductBySlugQuery,
   ProductBySlugQueryVariables,
-  ProductEntity,
   ProductsDocument,
   ProductsQuery,
   ProductsQueryVariables,
+  useCreateReviewMutation,
+  useGetProductReviewsByProductIdQuery,
 } from "../src/graphql/generated/graphql";
+import { useAuth } from "../src/hooks/auth";
+import { mapStarNumberToRating } from "../src/utils/constants";
+import { getAuthDataFromLocal } from "../src/utils/auth";
+import CustomerReviewList from "../src/components/CustomerReviewList";
+import Spinner from "../src/components/Spinner";
+import { useToastError } from "../src/hooks/error";
+import { toast } from "react-toastify";
 
 type GalleryImageProps = {
   selected: boolean;
@@ -220,6 +230,10 @@ const ReviewCount = styled.h4`
   margin: 20px 0;
 `;
 
+const SpinnerContainer = styled.div`
+  padding: 35px 0;
+`;
+
 const productInfoNavBarMenuList: ProductInfoNavBarMenuList[] = [
   { id: "additional-info", name: "Additional Information" },
   { id: "reviews", name: "Reviews" },
@@ -235,7 +249,7 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
   const [activeMenu, setActiveMenu] = useState<string>("additional-info");
   const [productQty, setProductQty] = useState<number>(0);
 
-  const [rating, setRating] = useState<number>(0);
+  const [rating, setRating] = useState<Enum_Review_Rating | null>();
   const [hoverRating, setHoverRating] = useState<number>(0);
 
   const [ratingInputErr, setRatingInputErr] = useState<string | undefined>();
@@ -244,19 +258,31 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
   const { formatPrice } = useCurrencyConverter(currencyInfo);
 
   const { addToCart } = useCart();
+  const { authUser } = useAuth();
+  const router = useRouter();
 
   const { validationSchema } = useCustomerReviewFormValidation();
+
+  const productRating = useMemo(() => {
+    const starRating = Object.keys(mapStarNumberToRating).find(
+      (key) => mapStarNumberToRating[Number(key)] === rating
+    );
+
+    return Number(starRating);
+  }, [rating]);
 
   const product = useMemo(() => {
     return products?.data[0];
   }, [products]);
 
   const productImages = useMemo(() => {
-    const { otherImages, mainImage } = products?.data[0].attributes || {};
-    const productVariants = otherImages?.data.map((image) => ({
-      url: image.attributes?.url,
-      formats: image.attributes?.formats,
-    }));
+    const { otherImages, mainImage } = products?.data[0]?.attributes || {};
+    const productVariants = otherImages
+      ? otherImages.data.map((image) => ({
+          url: image.attributes?.url,
+          formats: image.attributes?.formats,
+        }))
+      : [];
     return [
       {
         url: mainImage?.data?.attributes?.url,
@@ -266,8 +292,6 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
     ].slice(0, 3);
   }, [products]);
 
-  console.log(productImages);
-
   useEffect(() => {
     setSelectedVariant(productImages[0]);
   }, [productImages]);
@@ -275,23 +299,81 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
   const {
     register,
     handleSubmit,
+    resetField,
     formState: { errors },
   } = useForm<CustomerReviewFormValues>({
     resolver: yupResolver(validationSchema),
+    defaultValues: {
+      name:
+        (authUser &&
+          `${authUser?.user?.firstName} ${authUser?.user?.lastName}`) ||
+        "",
+      emailAddress: (authUser && authUser.user?.email) || "",
+    },
   });
 
-  const handleReviewSubmit = (data: CustomerReviewFormValues) => {
-    if (rating < 1) {
+  const [createReview, { loading, error }] = useCreateReviewMutation({
+    refetchQueries: [GetProductReviewsByProductIdDocument],
+  });
+
+  useToastError(error);
+
+  const {
+    loading: reviewsLoading,
+    data: productReviewsResult,
+    error: fetchReviewsErr,
+  } = useGetProductReviewsByProductIdQuery({
+    variables: { productId: product?.id },
+  });
+
+  const handleReviewSubmit = async (data: CustomerReviewFormValues) => {
+    if (!rating) {
       setRatingInputErr("Product rating is required!");
       return;
     }
 
+    if (!authUser?.user) {
+      await router.push("/auth/login");
+    }
+
     setRatingInputErr(undefined);
+    const { emailAddress, reviewComment, name } = data;
     console.log({ productRating: rating, ...data });
+    const authData = getAuthDataFromLocal();
+
+    const review = {
+      comment: reviewComment,
+      email: emailAddress,
+      name,
+      rating,
+      users_permissions_user: String(authData?.user?.id),
+      product: String(product?.id),
+    };
+
+    setRating(null);
+
+    try {
+      await createReview({
+        variables: {
+          review,
+        },
+        context: {
+          headers: {
+            authorization: authData?.jwt ? `Bearer ${authData.jwt}` : "",
+          },
+        },
+      });
+    } catch (err) {}
+
+    resetField("reviewComment");
+  };
+
+  const setProductRating = (stars: number) => {
+    setRating(mapStarNumberToRating[stars]);
   };
 
   useEffect(() => {
-    if (rating > 0) {
+    if (rating) {
       setRatingInputErr(undefined);
     }
   }, [rating]);
@@ -377,28 +459,36 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
             </AdditionalInfoTab>
           )}
           {activeMenu === "reviews" && (
-            <>
-              <ReviewCount>
-                1 Review for {product?.attributes?.name}
-              </ReviewCount>
-              <CustomerReview
-                userName="Cobus Bester"
-                reviewDate="June 7, 2013"
-                rating={4}
-                reviewComment="Simple and effective design. One of my favorites."
-              />
-              <CustomerReviewForm
-                registerFn={register}
-                handleLocalSubmit={handleSubmit}
-                onReviewSubmit={handleReviewSubmit}
-                formErrors={errors}
-                reviewRating={rating}
-                reviewHoverRating={hoverRating}
-                setReviewRating={setRating}
-                setReviewHoverRating={setHoverRating}
-                starRatingError={ratingInputErr}
-              />
-            </>
+            <div>
+              {reviewsLoading ? (
+                <SpinnerContainer>
+                  <Spinner size={2.4} color="#ab8e66" />
+                </SpinnerContainer>
+              ) : (
+                <>
+                  <ReviewCount>
+                    {productReviewsResult?.reviews?.meta.pagination.total || 0}{" "}
+                    Review for {product?.attributes?.name}
+                  </ReviewCount>
+                  <CustomerReviewList
+                    reviews={productReviewsResult?.reviews?.data || []}
+                    fetchError={fetchReviewsErr?.message}
+                  />
+                  <CustomerReviewForm
+                    registerFn={register}
+                    handleLocalSubmit={handleSubmit}
+                    onReviewSubmit={handleReviewSubmit}
+                    formErrors={errors}
+                    reviewRating={productRating}
+                    reviewHoverRating={hoverRating}
+                    setReviewRating={setProductRating}
+                    setReviewHoverRating={setHoverRating}
+                    starRatingError={ratingInputErr}
+                    isSubmitting={loading}
+                  />
+                </>
+              )}
+            </div>
           )}
         </NavbarContent>
       </ProductInfoAndReview>

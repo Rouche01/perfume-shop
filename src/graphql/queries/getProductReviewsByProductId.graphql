@@ -1,0 +1,18 @@
+query GetProductReviewsByProductId($productId: ID) {
+  reviews(filters: {product: {id: {eq: $productId}}}) {
+    meta {
+      pagination {
+        total
+      }
+    }
+    data {
+      id
+      attributes {
+        name
+        comment
+        createdAt
+        rating
+      }
+    }
+  }
+}

@@ -1,8 +1,9 @@
 import React, { FC } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 
 interface CircleProps {
   size?: number;
+  color?: string;
 }
 
 const Container = styled.div`
@@ -19,21 +20,24 @@ const spin = keyframes`
 const SpinningCircle = styled.div<CircleProps>`
   width: ${({ size }) => (size ? `${size}rem` : "1.5rem")};
   height: ${({ size }) => (size ? `${size}rem` : "1.5rem")};
-  border-color: rgba(255, 255, 255, 1);
+  border-color: ${({ color }) => (color ? color : "rgba(255, 255, 255, 1)")};
   border-radius: 9999px;
-  border-top: 2px solid #fff;
-  border-bottom-width: 2px solid #fff;
+  border-top: ${({ color }) =>
+    color ? `2px solid ${color}` : "2px solid #fff"};
+  border-bottom-width: ${({ color }) =>
+    color ? `2px solid ${color}` : "2px solid #fff"};
   animation: ${spin} 1s linear infinite;
 `;
 
 interface SpinnerProps {
   size?: number; // size in rem
+  color?: string;
 }
 
-const Spinner: FC<SpinnerProps> = ({ size }) => {
+const Spinner: FC<SpinnerProps> = ({ size, color }) => {
   return (
     <Container>
-      <SpinningCircle size={size} />
+      <SpinningCircle size={size} color={color} />
     </Container>
   );
 };

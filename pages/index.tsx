@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import Carousel from "../src/components/Carousel";
 import { CategoryNav, HomeSlide } from "../src/types/home";
@@ -170,6 +171,8 @@ const Home: NextPage = () => {
   const { currencyInfo } = useCurrencyContext();
   const { formatPrice } = useCurrencyConverter(currencyInfo);
 
+  const router = useRouter();
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const formattedSlides = useMemo(() => slides(formatPrice), [currencyInfo]);
 
@@ -185,6 +188,10 @@ const Home: NextPage = () => {
   const miniProductShowcase = useMemo(() => {
     return productsPreview?.products?.data.slice(0, 8);
   }, [productsPreview]);
+
+  const onHandleProductClick = (slug: string) => {
+    router.push(`/${slug}`);
+  };
 
   return (
     <PageContainer>
@@ -211,6 +218,7 @@ const Home: NextPage = () => {
         <CategoryProducts>
           {miniProductShowcase?.map(({ id, attributes }, idx) => (
             <ProductBox
+              slug={attributes?.slug!}
               key={attributes?.sku}
               name={attributes?.name}
               image={attributes?.mainImage.data?.attributes?.url}
@@ -219,6 +227,7 @@ const Home: NextPage = () => {
               salesExist={attributes?.onSales}
               salesPrice={formatPrice(attributes?.salesPrice as number)}
               isNew={true}
+              handleProductClick={onHandleProductClick}
             />
           ))}
         </CategoryProducts>

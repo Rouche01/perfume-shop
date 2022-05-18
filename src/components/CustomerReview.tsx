@@ -6,6 +6,7 @@ const Container = styled.div`
   width: 100%;
   display: flex;
   align-items: flex-start;
+  margin-bottom: 28px;
 `;
 
 const UserAvatar = styled.div.attrs({
@@ -59,6 +60,7 @@ const CustomerReview: FC<CustomerReviewProps> = ({
   rating,
   reviewComment,
 }) => {
+  console.log(rating)
   return (
     <Container>
       <UserAvatar>account_circle</UserAvatar>

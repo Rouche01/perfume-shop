@@ -75,7 +75,7 @@ export const AuthProvider: FC = ({ children }) => {
     setAuthUser(null);
     localStorage.removeItem(AUTH_INFO_KEY);
 
-    router.push("/login");
+    router.push("/auth/login");
   };
 
   const modCreateUser = async ({

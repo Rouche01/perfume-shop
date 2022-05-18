@@ -13,6 +13,7 @@ import withClickOutside, {
   WrappedComponentProps,
 } from "../hoc/withClickOutside";
 import { useCart } from "../hooks/cart";
+import { useAuth } from "../hooks/auth";
 
 interface CurrencyListProps {
   show: boolean;
@@ -60,6 +61,19 @@ const TopBarLink = styled(Link)`
   margin: 0;
   font-size: 1rem;
   color: #000;
+`;
+
+const TopBarBtn = styled.button`
+  background-color: transparent;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #000;
+  &:active {
+    outline: none;
+    border: none;
+  }
 `;
 
 const CurrencyDropdown = styled.div`
@@ -186,6 +200,7 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
     const { currencyInfo, setCurrencyInfo } = useCurrencyContext();
 
     const { cartState } = useCart();
+    const { authUser, modSignOut } = useAuth();
 
     const productQtyInCart = useMemo(
       () =>
@@ -257,9 +272,13 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
                 </CurrencyList>
               </CurrencyDropdown>
               <span>|</span>
-              <TopBarLink href="/auth/login">
-                <a style={{ color: "#000" }}>Login or Register</a>
-              </TopBarLink>
+              {!authUser?.user?.id ? (
+                <TopBarLink href="/auth/login">
+                  <a style={{ color: "#000" }}>Login or Register</a>
+                </TopBarLink>
+              ) : (
+                <TopBarBtn onClick={modSignOut}>Logout</TopBarBtn>
+              )}
             </TopBarActions>
           </InnerSection>
         </TopBar>

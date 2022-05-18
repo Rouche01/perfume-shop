@@ -5,6 +5,9 @@ mutation Register($input: customRegisterInput) {
       user {
         id
         username
+        firstName
+        lastName
+        email
         confirmed
         createdAt
       }

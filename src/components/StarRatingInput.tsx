@@ -73,7 +73,7 @@ const StarIcon = styled.span.attrs({
 interface StarRatingInputProps {
   rating: number;
   hoverRating: number;
-  setRating: React.Dispatch<React.SetStateAction<number>>;
+  setRating: (stars: number) => void;
   setHoverRating: React.Dispatch<React.SetStateAction<number>>;
   error?: string;
 }

@@ -5,6 +5,9 @@ mutation Login($firebaseToken: String) {
       user {
         id
         username
+        firstName
+        email
+        lastName
         confirmed
         createdAt
       }
