@@ -240,7 +240,7 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
       <>
         <TopBar>
           <InnerSection>
-            <TopBarText>Welcome to our online store!</TopBarText>
+            <TopBarText>{authUser?.user?.id && `Hello ${authUser.user.firstName}, `}Welcome to our online store!</TopBarText>
             <TopBarActions>
               <CurrencyDropdown ref={ref} className="currency-dropdown">
                 <CurrencyInput
@@ -303,7 +303,7 @@ const Header = forwardRef<Ref, WrappedComponentProps>(
                   <CounterSpan>0</CounterSpan>
                 </a>
               </LinkItem>
-              <LinkItem href="/profile">
+              <LinkItem href="/account">
                 <a>
                   <AiOutlineUser size={28} color="#555555" />
                 </a>
