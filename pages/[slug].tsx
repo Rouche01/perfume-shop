@@ -26,7 +26,10 @@ import {
 import { client } from "../src/services/apollo";
 import {
   Enum_Review_Rating,
+  GetProductAverageRatingDocument,
+  GetProductAverageRatingQuery,
   GetProductReviewsByProductIdDocument,
+  GetProductReviewsByProductIdQueryVariables,
   ProductBySlugDocument,
   ProductBySlugQuery,
   ProductBySlugQueryVariables,
@@ -43,6 +46,7 @@ import CustomerReviewList from "../src/components/CustomerReviewList";
 import Spinner from "../src/components/Spinner";
 import { useToastError } from "../src/hooks/error";
 import { toast } from "react-toastify";
+import QueryError from "../src/components/QueryError";
 
 type GalleryImageProps = {
   selected: boolean;
@@ -241,9 +245,13 @@ const productInfoNavBarMenuList: ProductInfoNavBarMenuList[] = [
 
 interface ProductPageProps {
   products?: ProductBySlugQuery["products"] | null;
+  productAverageRating?: number | null;
 }
 
-const ProductPage: FC<ProductPageProps> = ({ products }) => {
+const ProductPage: FC<ProductPageProps> = ({
+  products,
+  productAverageRating,
+}) => {
   const [selectedVariant, setSelectedVariant] =
     useState<ProductVariant | null>();
   const [activeMenu, setActiveMenu] = useState<string>("additional-info");
@@ -264,6 +272,9 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
   const { validationSchema } = useCustomerReviewFormValidation();
 
   const productRating = useMemo(() => {
+    if (!rating) {
+      return 0;
+    }
     const starRating = Object.keys(mapStarNumberToRating).find(
       (key) => mapStarNumberToRating[Number(key)] === rating
     );
@@ -333,12 +344,17 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
     }
 
     if (!authUser?.user) {
-      await router.push("/auth/login");
+      await router.push(
+        {
+          pathname: "/auth/login",
+          query: { from: `/${product?.attributes?.slug}` },
+        },
+        "/auth/login"
+      );
     }
 
     setRatingInputErr(undefined);
     const { emailAddress, reviewComment, name } = data;
-    console.log({ productRating: rating, ...data });
     const authData = getAuthDataFromLocal();
 
     const review = {
@@ -351,6 +367,7 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
     };
 
     setRating(null);
+    setHoverRating(0);
 
     try {
       await createReview({
@@ -405,7 +422,7 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
         </ProductGallery>
         <ProductMeta>
           <ProductName>{product?.attributes?.name}</ProductName>
-          <StarRating rating={3} />
+          <StarRating rating={productAverageRating!} />
           <InventoryData>
             Availability: <span style={{ color: "#ab8e66" }}>In Stock</span>
           </InventoryData>
@@ -466,26 +483,32 @@ const ProductPage: FC<ProductPageProps> = ({ products }) => {
                 </SpinnerContainer>
               ) : (
                 <>
-                  <ReviewCount>
-                    {productReviewsResult?.reviews?.meta.pagination.total || 0}{" "}
-                    Review for {product?.attributes?.name}
-                  </ReviewCount>
-                  <CustomerReviewList
-                    reviews={productReviewsResult?.reviews?.data || []}
-                    fetchError={fetchReviewsErr?.message}
-                  />
-                  <CustomerReviewForm
-                    registerFn={register}
-                    handleLocalSubmit={handleSubmit}
-                    onReviewSubmit={handleReviewSubmit}
-                    formErrors={errors}
-                    reviewRating={productRating}
-                    reviewHoverRating={hoverRating}
-                    setReviewRating={setProductRating}
-                    setReviewHoverRating={setHoverRating}
-                    starRatingError={ratingInputErr}
-                    isSubmitting={loading}
-                  />
+                  {fetchReviewsErr ? (
+                    <QueryError resourceName="reviews" />
+                  ) : (
+                    <>
+                      <ReviewCount>
+                        {productReviewsResult?.reviews?.meta.pagination.total ||
+                          0}{" "}
+                        Review for {product?.attributes?.name}
+                      </ReviewCount>
+                      <CustomerReviewList
+                        reviews={productReviewsResult?.reviews?.data || []}
+                      />
+                      <CustomerReviewForm
+                        registerFn={register}
+                        handleLocalSubmit={handleSubmit}
+                        onReviewSubmit={handleReviewSubmit}
+                        formErrors={errors}
+                        reviewRating={productRating}
+                        reviewHoverRating={hoverRating}
+                        setReviewRating={setProductRating}
+                        setReviewHoverRating={setHoverRating}
+                        starRatingError={ratingInputErr}
+                        isSubmitting={loading}
+                      />
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -527,7 +550,19 @@ export const getStaticProps = async ({
     ProductBySlugQueryVariables
   >({ query: ProductBySlugDocument, variables: { slug: params?.slug } });
 
+  const { data: productAvgRatingResponse } = await client().query<
+    GetProductAverageRatingQuery,
+    GetProductReviewsByProductIdQueryVariables
+  >({
+    query: GetProductAverageRatingDocument,
+    variables: { productId: data.products?.data[0].id },
+  });
+
   return {
-    props: { products: data.products },
+    props: {
+      products: data.products,
+      productAverageRating:
+        productAvgRatingResponse.averageProductRating?.averageRating,
+    },
   };
 };

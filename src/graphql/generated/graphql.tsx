@@ -29,6 +29,12 @@ export type Scalars = {
   Upload: any;
 };
 
+export type AverageProductRatingResponse = {
+  __typename?: "AverageProductRatingResponse";
+  averageRating?: Maybe<Scalars["Int"]>;
+  error?: Maybe<ErrorData>;
+};
+
 export type BooleanFilterInput = {
   and?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]>>>;
   between?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]>>>;
@@ -627,6 +633,7 @@ export enum PublicationState {
 
 export type Query = {
   __typename?: "Query";
+  averageProductRating?: Maybe<AverageProductRatingResponse>;
   i18NLocale?: Maybe<I18NLocaleEntityResponse>;
   i18NLocales?: Maybe<I18NLocaleEntityResponseCollection>;
   me?: Maybe<UsersPermissionsMe>;
@@ -642,6 +649,10 @@ export type Query = {
   usersPermissionsRoles?: Maybe<UsersPermissionsRoleEntityResponseCollection>;
   usersPermissionsUser?: Maybe<UsersPermissionsUserEntityResponse>;
   usersPermissionsUsers?: Maybe<UsersPermissionsUserEntityResponseCollection>;
+};
+
+export type QueryAverageProductRatingArgs = {
+  input?: InputMaybe<AverageProductRatingInput>;
 };
 
 export type QueryI18NLocaleArgs = {
@@ -1131,6 +1142,10 @@ export type UsersPermissionsUserRelationResponseCollection = {
   data: Array<UsersPermissionsUserEntity>;
 };
 
+export type AverageProductRatingInput = {
+  productId?: InputMaybe<Scalars["ID"]>;
+};
+
 export type CustomLoginInput = {
   token?: InputMaybe<Scalars["String"]>;
 };
@@ -1229,6 +1244,19 @@ export type RegisterMutation = {
         createdAt?: any | null;
       } | null;
     } | null;
+    error?: { __typename?: "ErrorData"; message?: string | null } | null;
+  } | null;
+};
+
+export type GetProductAverageRatingQueryVariables = Exact<{
+  productId?: InputMaybe<Scalars["ID"]>;
+}>;
+
+export type GetProductAverageRatingQuery = {
+  __typename?: "Query";
+  averageProductRating?: {
+    __typename?: "AverageProductRatingResponse";
+    averageRating?: number | null;
     error?: { __typename?: "ErrorData"; message?: string | null } | null;
   } | null;
 };
@@ -1543,6 +1571,67 @@ export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<
   RegisterMutation,
   RegisterMutationVariables
+>;
+export const GetProductAverageRatingDocument = gql`
+  query GetProductAverageRating($productId: ID) {
+    averageProductRating(input: { productId: $productId }) {
+      averageRating
+      error {
+        message
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetProductAverageRatingQuery__
+ *
+ * To run a query within a React component, call `useGetProductAverageRatingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProductAverageRatingQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProductAverageRatingQuery({
+ *   variables: {
+ *      productId: // value for 'productId'
+ *   },
+ * });
+ */
+export function useGetProductAverageRatingQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetProductAverageRatingQuery,
+    GetProductAverageRatingQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetProductAverageRatingQuery,
+    GetProductAverageRatingQueryVariables
+  >(GetProductAverageRatingDocument, options);
+}
+export function useGetProductAverageRatingLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetProductAverageRatingQuery,
+    GetProductAverageRatingQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetProductAverageRatingQuery,
+    GetProductAverageRatingQueryVariables
+  >(GetProductAverageRatingDocument, options);
+}
+export type GetProductAverageRatingQueryHookResult = ReturnType<
+  typeof useGetProductAverageRatingQuery
+>;
+export type GetProductAverageRatingLazyQueryHookResult = ReturnType<
+  typeof useGetProductAverageRatingLazyQuery
+>;
+export type GetProductAverageRatingQueryResult = Apollo.QueryResult<
+  GetProductAverageRatingQuery,
+  GetProductAverageRatingQueryVariables
 >;
 export const ProductBySlugDocument = gql`
   query ProductBySlug($slug: String) {

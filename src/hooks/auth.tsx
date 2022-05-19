@@ -42,7 +42,10 @@ export const AuthProvider: FC = ({ children }) => {
     return authData;
   });
 
-  const modSignIn = async ({ emailAddress, password }: LoginFormvalues) => {
+  const modSignIn = async (
+    { emailAddress, password }: LoginFormvalues,
+    next?: string
+  ) => {
     setLoading(true);
     const firebaseToken = await signIn({ emailAddress, password });
     const response = await login({
@@ -66,7 +69,7 @@ export const AuthProvider: FC = ({ children }) => {
       setAuthUser(userData);
       setLoading(false);
 
-      router.push("/shop");
+      next ? router.push(next) : router.push("/shop");
     }
   };
 

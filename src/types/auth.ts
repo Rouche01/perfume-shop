@@ -17,6 +17,6 @@ export interface AuthData {
     firstName,
     lastName,
   }: RegisterFormValues) => Promise<void>;
-  modSignIn: ({ emailAddress, password }: LoginFormvalues) => Promise<void>;
+  modSignIn: ({ emailAddress, password }: LoginFormvalues, next?: string) => Promise<void>;
   modSignOut: () => Promise<void>;
 }

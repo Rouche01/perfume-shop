@@ -1,0 +1,8 @@
+query GetProductAverageRating($productId: ID){
+	averageProductRating(input: {productId: $productId}) {
+    averageRating
+    error {
+      message
+    }
+  }
+}

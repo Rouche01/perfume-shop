@@ -60,7 +60,6 @@ const CustomerReview: FC<CustomerReviewProps> = ({
   rating,
   reviewComment,
 }) => {
-  console.log(rating)
   return (
     <Container>
       <UserAvatar>account_circle</UserAvatar>
