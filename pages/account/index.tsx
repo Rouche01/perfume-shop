@@ -1,15 +1,21 @@
 import React, { FC } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import styled from "styled-components";
 import { PageContainer, PageTitle } from "../../src/generalStyles";
 import Link from "next/link";
+import { useRecentlyViewed } from "../../src/hooks/recentlyViewed";
+import ProductBox from "../../src/components/ProductBox";
+import { useCurrencyContext } from "../../src/utils/currencyProvider";
+import { useCurrencyConverter } from "../../src/hooks/currency";
+import { CustomProduct } from "../../src/types/product";
 
 const AccountMenu = styled.div`
   margin-top: 24px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 30px;
-  margin-bottom: 80px;
+  margin-bottom: 70px;
 `;
 
 const MenuItem = styled.div`
@@ -24,6 +30,30 @@ const MenuItem = styled.div`
   &:hover {
     background-color: #eee;
   }
+`;
+
+const LineBreak = styled.hr`
+  width: 100%;
+  border: 1px solid #edeeee;
+`;
+
+const RecentlyViewedContainer = styled.div`
+  margin-top: 45px;
+  margin-bottom: 100px;
+`;
+
+const RecentlyViewTitle = styled.h2`
+  font-size: 1.3rem;
+  font-family: Jost;
+  font-weight: 600;
+`;
+
+const RecentlyViewedList = styled.div`
+  margin-top: 40px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 30px;
 `;
 
 const MenuIconContainer = styled.div`
@@ -93,6 +123,16 @@ const accountMenus = [
 ];
 
 const Account: FC = () => {
+  const { recentlyViewedProducts } = useRecentlyViewed();
+  const { currencyInfo } = useCurrencyContext();
+  const { formatPrice } = useCurrencyConverter(currencyInfo);
+
+  const router = useRouter();
+
+  const onHandleProductClick = (product: CustomProduct) => {
+    router.push(`/${product.slug}`);
+  };
+
   return (
     <PageContainer>
       <Head>
@@ -116,6 +156,27 @@ const Account: FC = () => {
           </Link>
         ))}
       </AccountMenu>
+      <LineBreak />
+      <RecentlyViewedContainer>
+        <RecentlyViewTitle>Recently Viewed Products</RecentlyViewTitle>
+        <RecentlyViewedList>
+          {recentlyViewedProducts.map((product) => (
+            <ProductBox
+              isNew={true}
+              originalPrice={formatPrice(product.originalPrice)}
+              rating={4}
+              salesPrice={formatPrice(product.salesPrice as number)}
+              slug={product.slug}
+              image={product.mainImage.data?.attributes?.url}
+              key={product.slug}
+              name={product.name}
+              salesExist={product.onSales}
+              sku={product.sku}
+              handleProductClick={() => onHandleProductClick(product)}
+            />
+          ))}
+        </RecentlyViewedList>
+      </RecentlyViewedContainer>
     </PageContainer>
   );
 };

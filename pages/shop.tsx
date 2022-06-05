@@ -16,6 +16,8 @@ import {
   ProductsQueryVariables,
 } from "../src/graphql/generated/graphql";
 import { client } from "../src/services/apollo";
+import { useRecentlyViewed } from "../src/hooks/recentlyViewed";
+import { CustomProduct } from "../src/types/product";
 
 const SortBar = styled.div`
   background-color: #f3f3f3;
@@ -47,6 +49,8 @@ const Shop: FC<ShopProps> = ({ products }) => {
   const { currencyInfo } = useCurrencyContext();
   const { formatPrice } = useCurrencyConverter(currencyInfo);
 
+  const { addProductToRecentlyViewed } = useRecentlyViewed();
+
   const router = useRouter();
 
   const handleSetSortedBy = (value: string) => {
@@ -62,8 +66,9 @@ const Shop: FC<ShopProps> = ({ products }) => {
     setPerPage(Number(first));
   };
 
-  const onHandleProductClick = (slug: string) => {
-    router.push(`/${slug}`);
+  const onHandleProductClick = (product: CustomProduct) => {
+    addProductToRecentlyViewed(product);
+    router.push(`/${product.slug}`);
   };
 
   return (
@@ -90,23 +95,25 @@ const Shop: FC<ShopProps> = ({ products }) => {
       </SortBar>
       <ProductList>
         {products?.data &&
-          products.data.map((val) => (
-            <ProductBox
-              key={val.attributes?.sku}
-              image={val.attributes?.mainImage.data?.attributes?.url}
-              sku={val.attributes?.sku}
-              name={val.attributes?.name}
-              originalPrice={formatPrice(
-                val.attributes?.originalPrice as number
-              )}
-              rating={4}
-              salesExist={val.attributes?.onSales}
-              salesPrice={formatPrice(val.attributes?.salesPrice as number)}
-              isNew={true}
-              slug={val.attributes?.slug!}
-              handleProductClick={onHandleProductClick}
-            />
-          ))}
+          products.data.map((val) => {
+            return (
+              <ProductBox
+                key={val.attributes?.sku}
+                image={val.attributes?.mainImage.data?.attributes?.url}
+                sku={val.attributes?.sku}
+                name={val.attributes?.name}
+                originalPrice={formatPrice(
+                  val.attributes?.originalPrice as number
+                )}
+                rating={4}
+                salesExist={val.attributes?.onSales}
+                salesPrice={formatPrice(val.attributes?.salesPrice as number)}
+                isNew={true}
+                slug={val.attributes?.slug!}
+                handleProductClick={() => onHandleProductClick(val.attributes!)}
+              />
+            );
+          })}
       </ProductList>
       <Pagination
         currentPage={currentPage}

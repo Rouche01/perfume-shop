@@ -10,6 +10,8 @@
 //   isNew?: boolean;
 // }
 
+import { Product } from "../graphql/generated/graphql";
+
 export enum ProductRating {
   "one",
   "two",
@@ -27,3 +29,6 @@ export interface ProductInfoNavBarMenuList {
   id: string;
   name: string;
 }
+
+export type CustomProduct = Omit<Product, 'mainImage'> &
+  { mainImage: { data?: { attributes?: { url : string} | null } | null }}
