@@ -1,8 +1,8 @@
+import Auth from "@/components/Auth";
+import { useAuth } from "@/hooks/auth";
+import { useRegisterFormValidation } from "@/hooks/validationSchema";
+import { RegisterFormValues } from "@/types/global";
 import React, { useEffect } from "react";
-import Auth from "../../src/components/Auth";
-import { useAuth } from "../../src/hooks/auth";
-import { useRegisterFormValidation } from "../../src/hooks/validationSchema";
-import { RegisterFormValues } from "../../src/types/global";
 
 const Register = () => {
   const { modCreateUser, loading, authError, setAuthError } = useAuth();

@@ -1,76 +1,20 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import Head from "next/head";
-import styled from "styled-components";
-import { PageContainer, PageTitle } from "../src/generalStyles";
-import Dropdown from "../src/components/Dropdown";
-import { SortOptions } from "../src/types/global";
-import ProductBox from "../src/components/ProductBox";
-import { useCurrencyContext } from "../src/utils/currencyProvider";
-import { useCurrencyConverter } from "../src/hooks/currency";
-import Pagination from "../src/components/Pagination";
+import { PageContainer } from "@/components/shared";
 import { GetStaticPropsResult } from "next";
-import { useRouter } from "next/router";
+import { client } from "@/services/apollo";
+import ShopView from "@/views/ShopView";
 import {
   ProductsDocument,
   ProductsQuery,
   ProductsQueryVariables,
-} from "../src/graphql/generated/graphql";
-import { client } from "../src/services/apollo";
-import { useRecentlyViewed } from "../src/hooks/recentlyViewed";
-import { CustomProduct } from "../src/types/product";
-
-const SortBar = styled.div`
-  background-color: #f3f3f3;
-  width: 100%;
-  padding: 24px 20px;
-  color: #888;
-  margin-bottom: 35px;
-  display: flex;
-  gap: 60px;
-`;
-
-const ProductList = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 30px;
-  margin-bottom: 40px;
-`;
+} from "@/graphql/generated/graphql";
 
 interface ShopProps {
   products?: ProductsQuery["products"] | null;
 }
 
 const Shop: FC<ShopProps> = ({ products }) => {
-  const [sortedBy, setSortedBy] = useState<SortOptions>(SortOptions.featured);
-  const [perPage, setPerPage] = useState<number>(8);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const { currencyInfo } = useCurrencyContext();
-  const { formatPrice } = useCurrencyConverter(currencyInfo);
-
-  const { addProductToRecentlyViewed } = useRecentlyViewed();
-
-  const router = useRouter();
-
-  const handleSetSortedBy = (value: string) => {
-    const newVal = Object.entries(SortOptions).find(
-      ([_key, val]) => val === value
-    )?.[0];
-    // @ts-ignore
-    setSortedBy(SortOptions[newVal]);
-  };
-
-  const handleSetPerPage = (value: string) => {
-    const [first] = value.split(" ");
-    setPerPage(Number(first));
-  };
-
-  const onHandleProductClick = (product: CustomProduct) => {
-    addProductToRecentlyViewed(product);
-    router.push(`/${product.slug}`);
-  };
-
   return (
     <PageContainer>
       <Head>
@@ -78,47 +22,7 @@ const Shop: FC<ShopProps> = ({ products }) => {
         <meta name="description" content="Authentic Perfumes & Ouds" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <PageTitle>All Products</PageTitle>
-      <SortBar>
-        <Dropdown
-          inputOptions={Object.values(SortOptions)}
-          inputValue={sortedBy}
-          label="Sort by"
-          setInputValue={handleSetSortedBy}
-        />
-        <Dropdown
-          inputOptions={[8, 12, 16, 20].map((val) => `${val} Products/Page`)}
-          inputValue={`${perPage} Products/Page`}
-          label="Show"
-          setInputValue={handleSetPerPage}
-        />
-      </SortBar>
-      <ProductList>
-        {products?.data &&
-          products.data.map((val) => {
-            return (
-              <ProductBox
-                key={val.attributes?.sku}
-                image={val.attributes?.mainImage.data?.attributes?.url}
-                sku={val.attributes?.sku}
-                name={val.attributes?.name}
-                originalPrice={formatPrice(
-                  val.attributes?.originalPrice as number
-                )}
-                rating={4}
-                salesExist={val.attributes?.onSales}
-                salesPrice={formatPrice(val.attributes?.salesPrice as number)}
-                isNew={true}
-                slug={val.attributes?.slug!}
-                handleProductClick={() => onHandleProductClick(val.attributes!)}
-              />
-            );
-          })}
-      </ProductList>
-      <Pagination
-        currentPage={currentPage}
-        setCurrentPage={(page: string) => setCurrentPage(Number(page))}
-      />
+      <ShopView products={products} />
     </PageContainer>
   );
 };

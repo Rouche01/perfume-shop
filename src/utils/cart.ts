@@ -1,4 +1,4 @@
-import { CartState } from "../types/cart";
+import { CartState } from "@/types/cart";
 
 export const CART_STATE = "cartState";
 

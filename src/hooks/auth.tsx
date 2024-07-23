@@ -4,15 +4,15 @@ import {
   useLoginMutation,
   UserData,
   useRegisterMutation,
-} from "../graphql/generated/graphql";
-import { AuthData } from "../types/auth";
-import { LoginFormvalues, RegisterFormValues } from "../types/global";
+} from "@/graphql/generated/graphql";
+import { AuthData } from "@/types/auth";
+import { LoginFormvalues, RegisterFormValues } from "@/types/global";
 import {
   AUTH_INFO_KEY,
   getAuthDataFromLocal,
   saveAuthData,
-} from "../utils/auth";
-import { useFirebaseAuth } from "./firebaseAuth";
+} from "@/utils/auth";
+import { useFirebaseAuth } from "@/hooks/firebaseAuth";
 
 const AuthContext = createContext<AuthData>({
   authUser: null,

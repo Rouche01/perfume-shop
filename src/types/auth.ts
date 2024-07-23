@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { Dispatch, SetStateAction } from "react";
-import { UserData } from "../graphql/generated/graphql";
+import { UserData } from "@/graphql/generated/graphql";
 import { LoginFormvalues, RegisterFormValues } from "./global";
 
 export type FirebaseUserData = Pick<User, "email" | "uid">;
@@ -17,6 +17,9 @@ export interface AuthData {
     firstName,
     lastName,
   }: RegisterFormValues) => Promise<void>;
-  modSignIn: ({ emailAddress, password }: LoginFormvalues, next?: string) => Promise<void>;
+  modSignIn: (
+    { emailAddress, password }: LoginFormvalues,
+    next?: string
+  ) => Promise<void>;
   modSignOut: () => Promise<void>;
 }

@@ -1,15 +1,16 @@
 import { useMemo } from "react";
-import { CurrencyInfo } from "../types/global";
+import { CurrencyInfo } from "@/types/global";
+
+const mappedMultiplier: { [key: string]: number } = {
+  USD: 0.0025,
+  CAD: 0.003,
+  EUR: 0.0021,
+  GBP: 0.0018,
+  NGN: 1,
+};
 
 export const useCurrencyConverter = (currency: CurrencyInfo) => {
   const { currencyCode, locale } = currency;
-  const mappedMultiplier: { [key: string]: number } = {
-    USD: 0.0025,
-    CAD: 0.003,
-    EUR: 0.0021,
-    GBP: 0.0018,
-    NGN: 1,
-  };
 
   return useMemo(
     () => ({
@@ -21,6 +22,6 @@ export const useCurrencyConverter = (currency: CurrencyInfo) => {
           currency: currencyCode,
         }),
     }),
-    [currencyCode]
+    [currencyCode, locale]
   );
 };

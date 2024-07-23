@@ -1,4 +1,4 @@
-import { CustomProduct } from "../types/product";
+import { CustomProduct } from "@/types/product";
 
 export const RECENTLY_VIEWED = "recentlyViewed";
 

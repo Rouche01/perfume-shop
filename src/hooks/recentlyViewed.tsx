@@ -1,12 +1,12 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
-import { CustomProduct } from "../types/product";
-import { RecentlyViewedContext } from "../types/recentlyViewed";
+import { CustomProduct } from "@/types/product";
+import { RecentlyViewedContextType } from "@/types/recentlyViewed";
 import {
   getRecentlyViewedFromLocalStorage,
   saveRecentlyViewedToLocalStorage,
-} from "../utils/recentlyViewed";
+} from "@/utils/recentlyViewed";
 
-const RecentlyViewedContext = createContext<RecentlyViewedContext>({
+const RecentlyViewedContext = createContext<RecentlyViewedContextType>({
   recentlyViewedProducts: [],
   addProductToRecentlyViewed: () => {},
 });

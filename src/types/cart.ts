@@ -5,7 +5,7 @@ export interface CartState {
   [key: string]: number;
 }
 
-export interface CartContext {
+export interface CartContextType {
   cartState: CartState;
   incrementProductInCart: (productSku: string) => void;
   decrementProductInCart: (productSku: string) => void;

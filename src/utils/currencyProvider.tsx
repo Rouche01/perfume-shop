@@ -1,5 +1,5 @@
 import { createContext, FC, useContext, useState } from "react";
-import { CurrencyContext, CurrencyInfo } from "../types/global";
+import { CurrencyContext, CurrencyInfo } from "@/types/global";
 
 export const Context = createContext<CurrencyContext>({
   currencyInfo: {

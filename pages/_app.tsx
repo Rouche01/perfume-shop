@@ -1,13 +1,13 @@
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import type { AppProps } from "next/app";
-import Layout from "../src/components/Layout";
-import { Provider as CurrencyProvider } from "../src/utils/currencyProvider";
-import { AuthProvider } from "../src/hooks/auth";
-import { CartProvider } from "../src/hooks/cart";
-import StrapiApolloProvider from "../src/graphql/apollo";
+import StrapiApolloProvider from "@/graphql/apollo";
+import { AuthProvider } from "@/hooks/auth";
+import { RecentlyViewedProvider } from "@/hooks/recentlyViewed";
+import { CartProvider } from "@/hooks/cart";
+import { Provider as CurrencyProvider } from "@/utils/currencyProvider";
+import Layout from "@/components/Layout";
 import { ToastContainer } from "react-toastify";
-import { RecentlyViewedProvider } from "../src/hooks/recentlyViewed";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

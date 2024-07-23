@@ -1,4 +1,4 @@
-import { Enum_Review_Rating } from "../graphql/generated/graphql";
+import { Enum_Review_Rating } from "@/graphql/generated/graphql";
 
 export const mapStarNumberToRating: { [key: number]: Enum_Review_Rating } = {
   1: Enum_Review_Rating.VeryBad,

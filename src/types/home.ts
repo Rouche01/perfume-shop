@@ -1,5 +1,3 @@
-import { IconType } from "react-icons";
-
 export interface HomeSlide {
   heroImg: string;
   mainTitle: string;

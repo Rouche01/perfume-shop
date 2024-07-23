@@ -1,3 +1,5 @@
+import config from "@/configs";
+import { getAuthDataFromLocal } from "@/utils/auth";
 import {
   ApolloClient,
   InMemoryCache,
@@ -6,15 +8,21 @@ import {
   ApolloLink,
 } from "@apollo/client";
 
-const httpLink = new HttpLink({ uri: "http://localhost:1337/graphql" });
+const httpLink = new HttpLink({ uri: `${config.strapiServerUrl}/graphql` });
 
 const authLink = new ApolloLink((operation, forward) => {
   const customHeaders = operation.getContext().hasOwnProperty("headers")
     ? operation.getContext().headers
     : {};
 
+  const authData =
+    typeof window !== "undefined" ? getAuthDataFromLocal() : null;
+
   operation.setContext({
-    headers: { ...customHeaders },
+    headers: {
+      ...customHeaders,
+      authorization: authData?.jwt ? `Bearer ${authData.jwt}` : "",
+    },
   });
 
   return forward(operation);

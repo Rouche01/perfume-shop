@@ -1,12 +1,12 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
-import { CartContext, CartState } from "../types/cart";
+import { CartContextType, CartState } from "@/types/cart";
 import {
   getCartFromLocalStorage,
   isCartEmpty,
   saveCartToLocalStorage,
-} from "../utils/cart";
+} from "@/utils/cart";
 
-const CartContext = createContext<CartContext>({
+const CartContext = createContext<CartContextType>({
   cartState: {},
   incrementProductInCart: () => {},
   decrementProductInCart: () => {},

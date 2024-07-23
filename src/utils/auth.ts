@@ -1,5 +1,5 @@
-import { UserData } from "../graphql/generated/graphql";
-import { FirebaseUserData } from "../types/auth";
+import { UserData } from "@/graphql/generated/graphql";
+import { FirebaseUserData } from "@/types/auth";
 
 export const AUTH_INFO_KEY = "auth:info";
 export const FIREBASE_AUTH_INFO_KEY = "firebase:auth:info";

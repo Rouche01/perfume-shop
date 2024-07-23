@@ -1,5 +1,5 @@
-import { ShopFeature } from "../types/home";
-import { CurrencyInfo } from "../types/global";
+import { ShopFeature } from "@/types/home";
+import { CurrencyInfo } from "@/types/global";
 
 export const shopFeatures: ShopFeature[] = [
   {

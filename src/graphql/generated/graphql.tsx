@@ -29,6 +29,46 @@ export type Scalars = {
   Upload: any;
 };
 
+export type AccountMenu = {
+  __typename?: "AccountMenu";
+  AccountMenu?: Maybe<ComponentAccountMenuAccountMenuItem>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+  publishedAt?: Maybe<Scalars["DateTime"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type AccountMenuEntity = {
+  __typename?: "AccountMenuEntity";
+  attributes?: Maybe<AccountMenu>;
+  id?: Maybe<Scalars["ID"]>;
+};
+
+export type AccountMenuEntityResponse = {
+  __typename?: "AccountMenuEntityResponse";
+  data?: Maybe<AccountMenuEntity>;
+};
+
+export type AccountMenuEntityResponseCollection = {
+  __typename?: "AccountMenuEntityResponseCollection";
+  data: Array<AccountMenuEntity>;
+  meta: ResponseCollectionMeta;
+};
+
+export type AccountMenuFiltersInput = {
+  and?: InputMaybe<Array<InputMaybe<AccountMenuFiltersInput>>>;
+  createdAt?: InputMaybe<DateTimeFilterInput>;
+  id?: InputMaybe<IdFilterInput>;
+  not?: InputMaybe<AccountMenuFiltersInput>;
+  or?: InputMaybe<Array<InputMaybe<AccountMenuFiltersInput>>>;
+  publishedAt?: InputMaybe<DateTimeFilterInput>;
+  updatedAt?: InputMaybe<DateTimeFilterInput>;
+};
+
+export type AccountMenuInput = {
+  AccountMenu?: InputMaybe<ComponentAccountMenuAccountMenuItemInput>;
+  publishedAt?: InputMaybe<Scalars["DateTime"]>;
+};
+
 export type AverageProductRatingResponse = {
   __typename?: "AverageProductRatingResponse";
   averageRating?: Maybe<Scalars["Int"]>;
@@ -56,6 +96,19 @@ export type BooleanFilterInput = {
   null?: InputMaybe<Scalars["Boolean"]>;
   or?: InputMaybe<Array<InputMaybe<Scalars["Boolean"]>>>;
   startsWith?: InputMaybe<Scalars["Boolean"]>;
+};
+
+export type ComponentAccountMenuAccountMenuItem = {
+  __typename?: "ComponentAccountMenuAccountMenuItem";
+  id: Scalars["ID"];
+  subtitle?: Maybe<Scalars["String"]>;
+  title?: Maybe<Scalars["String"]>;
+};
+
+export type ComponentAccountMenuAccountMenuItemInput = {
+  id?: InputMaybe<Scalars["ID"]>;
+  subtitle?: InputMaybe<Scalars["String"]>;
+  title?: InputMaybe<Scalars["String"]>;
 };
 
 export type CustomLoginResponse = {
@@ -138,6 +191,8 @@ export type FloatFilterInput = {
 };
 
 export type GenericMorph =
+  | AccountMenu
+  | ComponentAccountMenuAccountMenuItem
   | I18NLocale
   | Product
   | ProductCategory
@@ -277,6 +332,7 @@ export type LongFilterInput = {
 
 export type Mutation = {
   __typename?: "Mutation";
+  createAccountMenu?: Maybe<AccountMenuEntityResponse>;
   createProduct?: Maybe<ProductEntityResponse>;
   createProductCategory?: Maybe<ProductCategoryEntityResponse>;
   createReview?: Maybe<ReviewEntityResponse>;
@@ -287,6 +343,7 @@ export type Mutation = {
   createUsersPermissionsUser: UsersPermissionsUserEntityResponse;
   customLogin?: Maybe<CustomLoginResponse>;
   customRegister?: Maybe<CustomLoginResponse>;
+  deleteAccountMenu?: Maybe<AccountMenuEntityResponse>;
   deleteProduct?: Maybe<ProductEntityResponse>;
   deleteProductCategory?: Maybe<ProductCategoryEntityResponse>;
   deleteReview?: Maybe<ReviewEntityResponse>;
@@ -306,6 +363,7 @@ export type Mutation = {
   removeFile?: Maybe<UploadFileEntityResponse>;
   /** Reset user password. Confirm with a code (resetToken from forgotPassword) */
   resetPassword?: Maybe<UsersPermissionsLoginPayload>;
+  updateAccountMenu?: Maybe<AccountMenuEntityResponse>;
   updateFileInfo: UploadFileEntityResponse;
   updateProduct?: Maybe<ProductEntityResponse>;
   updateProductCategory?: Maybe<ProductCategoryEntityResponse>;
@@ -316,6 +374,10 @@ export type Mutation = {
   /** Update an existing user */
   updateUsersPermissionsUser: UsersPermissionsUserEntityResponse;
   upload: UploadFileEntityResponse;
+};
+
+export type MutationCreateAccountMenuArgs = {
+  data: AccountMenuInput;
 };
 
 export type MutationCreateProductArgs = {
@@ -348,6 +410,10 @@ export type MutationCustomLoginArgs = {
 
 export type MutationCustomRegisterArgs = {
   input?: InputMaybe<CustomRegisterInput>;
+};
+
+export type MutationDeleteAccountMenuArgs = {
+  id: Scalars["ID"];
 };
 
 export type MutationDeleteProductArgs = {
@@ -405,6 +471,11 @@ export type MutationResetPasswordArgs = {
   code: Scalars["String"];
   password: Scalars["String"];
   passwordConfirmation: Scalars["String"];
+};
+
+export type MutationUpdateAccountMenuArgs = {
+  data: AccountMenuInput;
+  id: Scalars["ID"];
 };
 
 export type MutationUpdateFileInfoArgs = {
@@ -633,6 +704,8 @@ export enum PublicationState {
 
 export type Query = {
   __typename?: "Query";
+  accountMenu?: Maybe<AccountMenuEntityResponse>;
+  accountMenus?: Maybe<AccountMenuEntityResponseCollection>;
   averageProductRating?: Maybe<AverageProductRatingResponse>;
   i18NLocale?: Maybe<I18NLocaleEntityResponse>;
   i18NLocales?: Maybe<I18NLocaleEntityResponseCollection>;
@@ -649,6 +722,17 @@ export type Query = {
   usersPermissionsRoles?: Maybe<UsersPermissionsRoleEntityResponseCollection>;
   usersPermissionsUser?: Maybe<UsersPermissionsUserEntityResponse>;
   usersPermissionsUsers?: Maybe<UsersPermissionsUserEntityResponseCollection>;
+};
+
+export type QueryAccountMenuArgs = {
+  id?: InputMaybe<Scalars["ID"]>;
+};
+
+export type QueryAccountMenusArgs = {
+  filters?: InputMaybe<AccountMenuFiltersInput>;
+  pagination?: InputMaybe<PaginationArg>;
+  publicationState?: InputMaybe<PublicationState>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
 };
 
 export type QueryAverageProductRatingArgs = {
@@ -1338,6 +1422,19 @@ export type GetProductReviewsByProductIdQuery = {
   } | null;
 };
 
+export type MeQueryVariables = Exact<{ [key: string]: never }>;
+
+export type MeQuery = {
+  __typename?: "Query";
+  me?: {
+    __typename?: "UsersPermissionsMe";
+    username: string;
+    confirmed?: boolean | null;
+    email?: string | null;
+    id: string;
+  } | null;
+};
+
 export type ProductsQueryVariables = Exact<{
   sortBy?: InputMaybe<
     Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
@@ -1793,6 +1890,47 @@ export type GetProductReviewsByProductIdQueryResult = Apollo.QueryResult<
   GetProductReviewsByProductIdQuery,
   GetProductReviewsByProductIdQueryVariables
 >;
+export const MeDocument = gql`
+  query Me {
+    me {
+      username
+      confirmed
+      email
+      id
+    }
+  }
+`;
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMeQuery(
+  baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+}
+export function useMeLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+}
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const ProductsDocument = gql`
   query Products($sortBy: [String], $page: Int, $pageSize: Int) {
     products(sort: $sortBy, pagination: { page: $page, pageSize: $pageSize }) {
